@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -19,21 +20,40 @@ import 'screens/admin/admin_login_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Safeguard against unhandled framework or platform errors causing abrupt exit
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    debugPrint('Flutter error caught: ${details.exceptionAsString()}');
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('Uncaught platform error caught safely: $error');
+    return true; // Prevents app crash
+  };
+
   // Lock orientation to portrait for clean gaming experience
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  try {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  } catch (e) {
+    debugPrint('Preferred orientation notice: $e');
+  }
 
   // Status bar and system navigation bar styling
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Color(0xFFF8FAFC),
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ),
-  );
+  try {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Color(0xFFF8FAFC),
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+  } catch (e) {
+    debugPrint('System UI overlay notice: $e');
+  }
 
   // Initialize Firebase safely (gracefully supports offline/local mode if config isn't placed yet)
   try {
@@ -42,18 +62,34 @@ void main() async {
     debugPrint('Firebase initialization notice: $e');
   }
 
-  // Initialize core services
-  final audioManager = AudioManager();
-  await audioManager.init();
+  // Initialize core services safely with error isolation
+  try {
+    final audioManager = AudioManager();
+    await audioManager.init();
+  } catch (e) {
+    debugPrint('AudioManager initialization notice: $e');
+  }
 
-  final quizRepo = QuizRepository();
-  await quizRepo.init();
+  try {
+    final quizRepo = QuizRepository();
+    await quizRepo.init();
+  } catch (e) {
+    debugPrint('QuizRepository initialization notice: $e');
+  }
 
-  final walletService = WalletService();
-  await walletService.init();
+  try {
+    final walletService = WalletService();
+    await walletService.init();
+  } catch (e) {
+    debugPrint('WalletService initialization notice: $e');
+  }
 
-  final admobService = AdMobService();
-  await admobService.init();
+  try {
+    final admobService = AdMobService();
+    await admobService.init();
+  } catch (e) {
+    debugPrint('AdMobService initialization notice: $e');
+  }
 
   runApp(const QuizAndEarnApp());
 }
