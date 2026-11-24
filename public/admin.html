@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz & Earn — Super Admin Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#EEF2FF',
+              100: '#E0E7FF',
+              500: '#6366F1',
+              600: '#4F46E5',
+              700: '#4338CA',
+              800: '#3730A3',
+              900: '#312E81',
+            },
+            gold: {
+              400: '#FBBF24',
+              500: '#F59E0B',
+              600: '#D97706',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+    .badge-gold { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .badge-green { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+    .badge-blue { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-900 to-brand-600 flex items-center justify-center text-white font-extrabold shadow-md shadow-brand-500/20">
+          Q
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-lg font-extrabold text-slate-900 tracking-tight">Quiz & Earn</span>
+            <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700 uppercase tracking-wider">Super Admin</span>
+          </div>
+          <p class="text-xs text-slate-500 font-medium">Production Management Console</p>
+        </div>
+      </div>
+
+      <!-- Super Admin Profile Badge -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200">
+          <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">
+            S
+          </div>
+          <div class="text-left">
+            <div class="text-xs font-bold text-slate-800 flex items-center space-x-1">
+              <span>suhailahmadqasmi45@gmail.com</span>
+              <svg class="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="text-[10px] text-emerald-600 font-semibold">Master Administrator Active</div>
+          </div>
+        </div>
+
+        <a href="/" target="_blank" class="px-3.5 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition shadow-sm flex items-center space-x-1">
+          <span>Open App</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <!-- KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow transition">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Registered Players</span>
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">👥</div>
+        </div>
+        <div class="text-2xl font-extrabold text-slate-900">156</div>
+        <div class="text-xs text-emerald-600 font-semibold mt-1">↑ 18 new players this week</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow transition">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quizzes Completed</span>
+          <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">🎯</div>
+        </div>
+        <div class="text-2xl font-extrabold text-slate-900">1,425</div>
+        <div class="text-xs text-purple-600 font-semibold mt-1">87% completion rate</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow transition">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Points Distributed</span>
+          <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">⭐</div>
+        </div>
+        <div class="text-2xl font-extrabold text-slate-900">124,000 <span class="text-xs text-slate-500 font-medium">(₹1,240.00)</span></div>
+        <div class="text-xs text-slate-500 font-medium mt-1">Ratio: 100 Pts = ₹1.00</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 shadow-sm hover:shadow transition border-amber-200 bg-amber-50/30">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold text-amber-800 uppercase tracking-wider">Pending Withdrawals</span>
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">💳</div>
+        </div>
+        <div class="text-2xl font-extrabold text-amber-900" id="pendingCountDisplay">1 Request</div>
+        <div class="text-xs text-amber-700 font-bold mt-1">Min. threshold: ₹1,000</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b border-slate-200 mb-6 space-x-6 text-sm font-bold">
+      <button onclick="switchTab('questions')" id="tab-btn-questions" class="pb-3 border-b-2 border-brand-600 text-brand-600 flex items-center space-x-2">
+        <span>📝 Questions Manager</span>
+        <span class="px-2 py-0.5 text-xs bg-indigo-50 text-brand-600 rounded-full font-extrabold" id="qCountBadge">Loading...</span>
+      </button>
+      <button onclick="switchTab('users')" id="tab-btn-users" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-2">
+        <span>👥 User Directory</span>
+      </button>
+      <button onclick="switchTab('withdrawals')" id="tab-btn-withdrawals" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-2">
+        <span>💸 UPI Payout Requests</span>
+        <span class="px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full font-extrabold">1 Pending</span>
+      </button>
+      <button onclick="switchTab('settings')" id="tab-btn-settings" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center space-x-2">
+        <span>⚙️ App & Reward Settings</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: Questions Manager -->
+    <section id="tab-questions" class="space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 glass-card p-4 rounded-2xl">
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <input type="text" id="qSearchInput" oninput="filterQuestions()" placeholder="Search questions..." class="px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 w-full sm:w-64">
+          <select id="catFilter" onchange="filterQuestions()" class="px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="all">All Categories</option>
+            <option value="movies">Bollywood & Cinema (#1)</option>
+            <option value="gk">General Knowledge</option>
+            <option value="science">Science & Technology</option>
+            <option value="math">Mathematics & Reasoning</option>
+            <option value="sports">Sports & Games</option>
+            <option value="image">Image Quiz & Mystery</option>
+          </select>
+        </div>
+
+        <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+          <button onclick="exportQuestionsJson()" class="px-3.5 py-2 text-xs font-bold bg-white text-slate-700 border border-slate-300 rounded-xl hover:bg-slate-50 shadow-sm flex items-center space-x-1.5">
+            <span>💾 Export questions.json</span>
+          </button>
+          <button onclick="openAddQuestionModal()" class="px-4 py-2 text-xs font-bold bg-brand-600 text-white rounded-xl hover:bg-brand-700 shadow-sm flex items-center space-x-1.5">
+            <span>+ Add Question</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Question Table -->
+      <div class="glass-card rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-50/80 border-b border-slate-200 text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                <th class="py-3.5 px-4">ID</th>
+                <th class="py-3.5 px-4">Category</th>
+                <th class="py-3.5 px-4">Question</th>
+                <th class="py-3.5 px-4">Correct Answer</th>
+                <th class="py-3.5 px-4">Difficulty</th>
+                <th class="py-3.5 px-4">Points</th>
+                <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="questionsTableBody" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="8" class="text-center py-10 text-slate-400 font-medium">Loading trivia questions repository...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Users Directory -->
+    <section id="tab-users" class="space-y-4 hidden">
+      <div class="glass-card rounded-2xl overflow-hidden shadow-sm">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Player Accounts</h3>
+            <p class="text-xs text-slate-500">Live verified player profiles and point wallets</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                <th class="py-3.5 px-4">Player</th>
+                <th class="py-3.5 px-4">Contact & UPI</th>
+                <th class="py-3.5 px-4">Quizzes Played</th>
+                <th class="py-3.5 px-4">Accuracy</th>
+                <th class="py-3.5 px-4">Available Points</th>
+                <th class="py-3.5 px-4">Wallet Balance</th>
+                <th class="py-3.5 px-4">Total Paid Out</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr class="hover:bg-slate-50/50">
+                <td class="py-3.5 px-4">
+                  <div class="font-bold text-slate-900">Gulshan Kumar</div>
+                  <div class="text-xs text-slate-500 flex items-center space-x-1">
+                    <span>gulshan.quiz@gmail.com</span>
+                    <span class="text-emerald-600 font-semibold text-[10px]">✓ Google</span>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4">
+                  <div class="text-xs font-medium">+91 9823451234</div>
+                  <div class="text-xs text-indigo-600 font-semibold font-mono">gulshan@okhdfcbank</div>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">5 rounds</td>
+                <td class="py-3.5 px-4 font-bold text-emerald-600">82% (18/22)</td>
+                <td class="py-3.5 px-4 font-extrabold text-amber-600">200 Pts</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">₹2.00</td>
+                <td class="py-3.5 px-4 text-xs font-semibold text-slate-500">₹0.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50/50">
+                <td class="py-3.5 px-4">
+                  <div class="font-bold text-slate-900">Aakash Sharma</div>
+                  <div class="text-xs text-slate-500 flex items-center space-x-1">
+                    <span>aakash.sharma@gmail.com</span>
+                    <span class="text-emerald-600 font-semibold text-[10px]">✓ Google</span>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4">
+                  <div class="text-xs font-medium">+91 9811223344</div>
+                  <div class="text-xs text-indigo-600 font-semibold font-mono">aakash@oksbi</div>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">45 rounds</td>
+                <td class="py-3.5 px-4 font-bold text-emerald-600">86% (390/450)</td>
+                <td class="py-3.5 px-4 font-extrabold text-amber-600">5,200 Pts</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">₹52.00</td>
+                <td class="py-3.5 px-4 text-xs font-semibold text-slate-500">₹0.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50/50">
+                <td class="py-3.5 px-4">
+                  <div class="font-bold text-slate-900">Priya Verma</div>
+                  <div class="text-xs text-slate-500 flex items-center space-x-1">
+                    <span>priya.verma@outlook.com</span>
+                    <span class="text-emerald-600 font-semibold text-[10px]">✓ Google</span>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4">
+                  <div class="text-xs font-medium">+91 9711556677</div>
+                  <div class="text-xs text-indigo-600 font-semibold font-mono">priya@paytm</div>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">28 rounds</td>
+                <td class="py-3.5 px-4 font-bold text-emerald-600">75% (210/280)</td>
+                <td class="py-3.5 px-4 font-extrabold text-amber-600">1,600 Pts</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">₹16.00</td>
+                <td class="py-3.5 px-4 text-xs font-semibold text-slate-500">₹10.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50/50">
+                <td class="py-3.5 px-4">
+                  <div class="font-bold text-slate-900">Suhail Ahmad (Super Admin)</div>
+                  <div class="text-xs text-slate-500 flex items-center space-x-1">
+                    <span>suhailahmadqasmi45@gmail.com</span>
+                    <span class="text-indigo-600 font-bold text-[10px]">★ Root Admin</span>
+                  </div>
+                </td>
+                <td class="py-3.5 px-4">
+                  <div class="text-xs font-medium">+91 9876543210</div>
+                  <div class="text-xs text-indigo-600 font-semibold font-mono">suhail@okhdfcbank</div>
+                </td>
+                <td class="py-3.5 px-4 font-bold text-slate-800">120 rounds</td>
+                <td class="py-3.5 px-4 font-bold text-emerald-600">92% (110/120)</td>
+                <td class="py-3.5 px-4 font-extrabold text-amber-600">50,000 Pts</td>
+                <td class="py-3.5 px-4 font-bold text-slate-900">₹500.00</td>
+                <td class="py-3.5 px-4 text-xs font-semibold text-slate-500">System Admin</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Withdrawals -->
+    <section id="tab-withdrawals" class="space-y-4 hidden">
+      <div class="glass-card rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Pending UPI Redemption Requests</h3>
+            <p class="text-xs text-slate-500">Minimum withdrawal rule enforced: ₹1,000 (100,000 Points)</p>
+          </div>
+          <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-lg">1 Awaiting Action</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                <th class="py-3.5 px-4">Request ID</th>
+                <th class="py-3.5 px-4">User</th>
+                <th class="py-3.5 px-4">Target UPI Address</th>
+                <th class="py-3.5 px-4">Points Deducted</th>
+                <th class="py-3.5 px-4">Payout Value</th>
+                <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsBody" class="divide-y divide-slate-100">
+              <tr id="req-row-1" class="hover:bg-slate-50/50">
+                <td class="py-3.5 px-4 font-mono text-xs font-bold text-slate-800">REQ-1004</td>
+                <td class="py-3.5 px-4 font-semibold text-slate-900">Gulshan Kumar</td>
+                <td class="py-3.5 px-4 font-mono text-xs text-indigo-600 font-bold">gulshan@okhdfcbank</td>
+                <td class="py-3.5 px-4 font-bold text-amber-600">100,000 Pts</td>
+                <td class="py-3.5 px-4 font-extrabold text-emerald-600">₹1,000.00</td>
+                <td class="py-3.5 px-4">
+                  <span id="status-badge-1004" class="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-800">Pending</span>
+                </td>
+                <td class="py-3.5 px-4 text-right space-x-2">
+                  <button onclick="approvePayout('1004', 'Gulshan Kumar', 1000)" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">Approve & Pay</button>
+                  <button onclick="rejectPayout('1004')" class="px-3 py-1.5 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-xs font-bold hover:bg-rose-100 transition">Reject</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Settings -->
+    <section id="tab-settings" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-6 shadow-sm">
+          <h3 class="text-base font-extrabold text-slate-900 mb-1">Economics & Rewards Policy</h3>
+          <p class="text-xs text-slate-500 mb-5">Configure reward valuation and withdrawal limits</p>
+
+          <div class="space-y-4 text-sm">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Points to ₹1.00 Conversion Ratio</label>
+              <div class="flex items-center space-x-2">
+                <input type="number" id="settingPointsPerRupee" value="100" class="px-3.5 py-2 border border-slate-200 rounded-xl w-32 font-bold focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                <span class="text-xs font-medium text-slate-500">Points strictly equal ₹1.00</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Minimum Withdrawal Limit (₹)</label>
+              <div class="flex items-center space-x-2">
+                <span class="font-bold text-slate-600">₹</span>
+                <input type="number" id="settingMinRupees" value="1000" class="px-3.5 py-2 border border-slate-200 rounded-xl w-32 font-bold focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                <span class="text-xs font-medium text-slate-500">(100,000 Points threshold)</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Daily Login Bonus Reward</label>
+              <div class="flex items-center space-x-2">
+                <input type="number" id="settingDailyBonus" value="50" class="px-3.5 py-2 border border-slate-200 rounded-xl w-32 font-bold focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                <span class="text-xs font-medium text-slate-500">Points added upon daily claim</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 shadow-sm">
+          <h3 class="text-base font-extrabold text-slate-900 mb-1">Monetization & AdMob Integration</h3>
+          <p class="text-xs text-slate-500 mb-5">Control live advertising units</p>
+
+          <div class="space-y-4 text-sm">
+            <div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl">
+              <div>
+                <div class="font-bold text-slate-800">Rewarded Video Ads (Hints)</div>
+                <div class="text-xs text-slate-500">User watches video ad to unlock quiz hint</div>
+              </div>
+              <input type="checkbox" checked class="w-5 h-5 text-brand-600 rounded focus:ring-brand-500">
+            </div>
+
+            <div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl">
+              <div>
+                <div class="font-bold text-slate-800">Interstitial Ads (Transitions)</div>
+                <div class="text-xs text-slate-500">Shown between quiz round completions</div>
+              </div>
+              <input type="checkbox" checked class="w-5 h-5 text-brand-600 rounded focus:ring-brand-500">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">AdMob App ID</label>
+              <input type="text" readonly value="ca-app-pub-3940256099942544~3347511713" class="px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl w-full text-xs font-mono text-slate-600">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="saveSettings()" class="px-5 py-2.5 bg-brand-600 text-white rounded-xl font-bold text-sm hover:bg-brand-700 shadow-md transition">
+          Save Configuration
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add Question Modal -->
+  <div id="addQuestionModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-extrabold text-slate-900 text-lg">Add New Trivia Question</h3>
+        <button onclick="closeAddQuestionModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
+      </div>
+
+      <form id="newQuestionForm" onsubmit="handleSaveNewQuestion(event)" class="space-y-3.5 text-sm">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+          <select id="modalCategory" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            <option value="movies">Bollywood & Cinema (#1)</option>
+            <option value="gk">General Knowledge</option>
+            <option value="science">Science & Technology</option>
+            <option value="math">Mathematics & Reasoning</option>
+            <option value="sports">Sports & Games</option>
+            <option value="image">Image Quiz & Mystery</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Question Text *</label>
+          <textarea id="modalText" required rows="2" placeholder="e.g. In which film did Amitabh Bachchan play the character 'Vijay Verma'?" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Option A *</label>
+            <input type="text" id="modalOptA" required placeholder="Option 1" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Option B *</label>
+            <input type="text" id="modalOptB" required placeholder="Option 2" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Option C *</label>
+            <input type="text" id="modalOptC" required placeholder="Option 3" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Option D *</label>
+            <input type="text" id="modalOptD" required placeholder="Option 4" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Correct Option</label>
+            <select id="modalCorrect" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl font-bold">
+              <option value="0">Option A</option>
+              <option value="1">Option B</option>
+              <option value="2">Option C</option>
+              <option value="3">Option D</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Reward Points</label>
+            <input type="number" id="modalPoints" value="10" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl font-bold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Educational Explanation</label>
+          <input type="text" id="modalExpl" placeholder="Short fact or context shown after answer" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl">
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-3">
+          <button type="button" onclick="closeAddQuestionModal()" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-brand-600 rounded-xl hover:bg-brand-700 shadow">Save Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let questionsData = [];
+
+    // Category mapping
+    const categoryNames = {
+      'movies': 'Bollywood & Cinema',
+      'gk': 'General Knowledge',
+      'science': 'Science & Technology',
+      'math': 'Math & Reasoning',
+      'sports': 'Sports & Games',
+      'image': 'Image Quiz'
+    };
+
+    async function loadQuestions() {
+      try {
+        const res = await fetch('/assets/assets/data/questions.json');
+        if (res.ok) {
+          questionsData = await res.json();
+        } else {
+          throw new Error('Fallback to local default');
+        }
+      } catch (e) {
+        // Fallback default sample questions
+        questionsData = [
+          {
+            id: 'movies_001',
+            categoryId: 'movies',
+            questionText: 'Which Indian movie song won the Oscar for Best Original Song in 2023?',
+            options: ['Naatu Naatu (RRR)', 'Jai Ho (Slumdog)', 'Chaiyya Chaiyya', 'Kesariya (Brahmastra)'],
+            correctOptionIndex: 0,
+            difficultyTitle: 'Easy',
+            pointsReward: 10,
+            isPublished: true
+          },
+          {
+            id: 'movies_002',
+            categoryId: 'movies',
+            questionText: "Who directed the blockbuster movie 'Dangal' (2016)?",
+            options: ['Nitesh Tiwari', 'Rajkumar Hirani', 'Ashutosh Gowariker', 'Kabir Khan'],
+            correctOptionIndex: 0,
+            difficultyTitle: 'Easy',
+            pointsReward: 10,
+            isPublished: true
+          },
+          {
+            id: 'gk_001',
+            categoryId: 'gk',
+            questionText: 'What is the capital city of India?',
+            options: ['New Delhi', 'Mumbai', 'Kolkata', 'Chennai'],
+            correctOptionIndex: 0,
+            difficultyTitle: 'Easy',
+            pointsReward: 10,
+            isPublished: true
+          },
+          {
+            id: 'science_001',
+            categoryId: 'science',
+            questionText: 'Which planet is known as the Red Planet?',
+            options: ['Mars', 'Venus', 'Jupiter', 'Mercury'],
+            correctOptionIndex: 0,
+            difficultyTitle: 'Easy',
+            pointsReward: 10,
+            isPublished: true
+          }
+        ];
+      }
+      renderQuestionsTable(questionsData);
+      document.getElementById('qCountBadge').innerText = questionsData.length + ' Questions';
+    }
+
+    function renderQuestionsTable(list) {
+      const tbody = document.getElementById('questionsTableBody');
+      if (!list || list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-400">No questions found matching filter.</td></tr>';
+        return;
+      }
+
+      // Display up to 50 for quick responsiveness
+      const displayList = list.slice(0, 50);
+
+      tbody.innerHTML = displayList.map(q => {
+        const catName = categoryNames[q.categoryId] || q.categoryId;
+        const correctAns = q.options && q.options[q.correctOptionIndex] ? q.options[q.correctOptionIndex] : 'A';
+        const isPub = q.isPublished !== false;
+
+        return `
+          <tr class="hover:bg-slate-50/70 transition">
+            <td class="py-3 px-4 font-mono text-xs text-slate-500 font-semibold">${q.id}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md ${q.categoryId === 'movies' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-700'}">
+                ${catName}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-semibold text-slate-900 max-w-xs truncate" title="${q.questionText}">${q.questionText}</td>
+            <td class="py-3 px-4 font-bold text-emerald-600 text-xs">${correctAns}</td>
+            <td class="py-3 px-4 text-xs font-semibold text-slate-600">${q.difficultyTitle || 'Easy'}</td>
+            <td class="py-3 px-4 font-bold text-amber-600">+${q.pointsReward || 10} pts</td>
+            <td class="py-3 px-4">
+              <span onclick="togglePublish('${q.id}')" class="cursor-pointer px-2 py-0.5 text-[10px] font-extrabold rounded-full ${isPub ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">
+                ${isPub ? 'Active' : 'Draft'}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-right space-x-2">
+              <button onclick="deleteQuestion('${q.id}')" class="text-xs font-bold text-rose-600 hover:text-rose-800">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterQuestions() {
+      const search = document.getElementById('qSearchInput').value.toLowerCase();
+      const cat = document.getElementById('catFilter').value;
+
+      const filtered = questionsData.filter(q => {
+        const matchesCat = (cat === 'all' || q.categoryId === cat);
+        const matchesSearch = !search || q.questionText.toLowerCase().includes(search) || q.options.some(o => o.toLowerCase().includes(search));
+        return matchesCat && matchesSearch;
+      });
+
+      renderQuestionsTable(filtered);
+    }
+
+    function togglePublish(id) {
+      const q = questionsData.find(item => item.id === id);
+      if (q) {
+        q.isPublished = !q.isPublished;
+        filterQuestions();
+      }
+    }
+
+    function deleteQuestion(id) {
+      if (confirm('Delete this question permanently?')) {
+        questionsData = questionsData.filter(item => item.id !== id);
+        document.getElementById('qCountBadge').innerText = questionsData.length + ' Questions';
+        filterQuestions();
+      }
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['questions', 'users', 'withdrawals', 'settings'];
+      tabs.forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        const btn = document.getElementById('tab-btn-' + t);
+        btn.classList.remove('border-brand-600', 'text-brand-600');
+        btn.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      activeBtn.classList.remove('border-transparent', 'text-slate-500');
+      activeBtn.classList.add('border-brand-600', 'text-brand-600');
+    }
+
+    function approvePayout(reqId, name, amount) {
+      const utr = prompt('Enter Bank / UPI UTR Transaction Reference Number:', 'UTR' + Math.floor(100000000 + Math.random() * 900000000));
+      if (utr) {
+        document.getElementById('status-badge-' + reqId).className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800';
+        document.getElementById('status-badge-' + reqId).innerText = 'Approved (UTR: ' + utr + ')';
+        document.getElementById('pendingCountDisplay').innerText = '0 Requests';
+        alert('Payment of ₹' + amount + ' to ' + name + ' marked Approved with UTR ' + utr + '!');
+      }
+    }
+
+    function rejectPayout(reqId) {
+      const reason = prompt('Enter rejection reason for player:', 'Incorrect UPI ID format. Please update in profile.');
+      if (reason) {
+        document.getElementById('status-badge-' + reqId).className = 'px-2.5 py-1 text-xs font-bold rounded-full bg-rose-100 text-rose-800';
+        document.getElementById('status-badge-' + reqId).innerText = 'Rejected';
+        document.getElementById('pendingCountDisplay').innerText = '0 Requests';
+        alert('Payout request REQ-' + reqId + ' rejected. Points refunded to player wallet.');
+      }
+    }
+
+    function saveSettings() {
+      alert('Economy & AdMob settings saved successfully for Quiz & Earn production!');
+    }
+
+    function openAddQuestionModal() {
+      document.getElementById('addQuestionModal').classList.remove('hidden');
+    }
+
+    function closeAddQuestionModal() {
+      document.getElementById('addQuestionModal').classList.add('hidden');
+    }
+
+    function handleSaveNewQuestion(e) {
+      e.preventDefault();
+      const newQ = {
+        id: document.getElementById('modalCategory').value + '_' + Date.now().toString().slice(-4),
+        categoryId: document.getElementById('modalCategory').value,
+        questionText: document.getElementById('modalText').value,
+        options: [
+          document.getElementById('modalOptA').value,
+          document.getElementById('modalOptB').value,
+          document.getElementById('modalOptC').value,
+          document.getElementById('modalOptD').value,
+        ],
+        correctOptionIndex: parseInt(document.getElementById('modalCorrect').value),
+        pointsReward: parseInt(document.getElementById('modalPoints').value) || 10,
+        explanation: document.getElementById('modalExpl').value,
+        difficultyTitle: 'Medium',
+        isPublished: true
+      };
+
+      questionsData.unshift(newQ);
+      document.getElementById('qCountBadge').innerText = questionsData.length + ' Questions';
+      closeAddQuestionModal();
+      filterQuestions();
+      alert('New trivia question created and published!');
+    }
+
+    function exportQuestionsJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questionsData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "questions.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // Initialize
+    loadQuestions();
+  </script>
+</body>
+</html>
