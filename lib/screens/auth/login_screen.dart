@@ -36,9 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       user: user,
       onCompleted: () {
-        Navigator.pushReplacement(
-          context,
+        if (!mounted) return;
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+          (route) => false,
         );
       },
     );
@@ -53,12 +54,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (success && auth.currentUser != null) {
       final user = auth.currentUser!;
-      // Immediately open profile popup right on the login screen
-      _showProfilePopup(user);
+      // If user profile is already completed, go directly to Home Dashboard!
+      if (user.mobile.isNotEmpty && user.name.isNotEmpty) {
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+          (route) => false,
+        );
+      } else {
+        // Only new users with incomplete profiles see the setup popup
+        _showProfilePopup(user);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Sign-in failed. Please check your connection and retry.'),
+          content: Text('Sign-in cancelled or failed. Please retry.'),
           backgroundColor: AppColors.wrong,
         ),
       );

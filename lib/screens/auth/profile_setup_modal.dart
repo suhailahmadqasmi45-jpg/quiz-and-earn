@@ -83,6 +83,7 @@ class _ProfileSetupModalState extends State<ProfileSetupModal> {
       );
 
       if (!mounted) return;
+      Navigator.of(context).pop();
       widget.onCompleted();
     } catch (e) {
       if (mounted) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/question_model.dart';
@@ -19,7 +20,14 @@ class QuizRepository {
   Future<void> init({String? userId}) async {
     if (_isInitialized && userId == _activeUserId) return;
     try {
-      final jsonString = await rootBundle.loadString('assets/data/questions.json');
+      String jsonString;
+      try {
+        final byteData = await rootBundle.load('assets/data/questions.json.gz');
+        final bytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+        jsonString = utf8.decode(gzip.decode(bytes));
+      } catch (_) {
+        jsonString = await rootBundle.loadString('assets/data/questions.json');
+      }
       final List<dynamic> jsonList = json.decode(jsonString);
       _questions.clear();
       for (final item in jsonList) {

@@ -49,6 +49,7 @@ class _WalletScreenState extends State<WalletScreen>
     return Scaffold(
       backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Digital Wallet',
           style: GoogleFonts.plusJakartaSans(
