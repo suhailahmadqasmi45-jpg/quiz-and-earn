@@ -129,9 +129,9 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
     }
 
     if (q == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
+      return Scaffold(
+        backgroundColor: AppColors.backgroundOf(context),
+        body: const Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
       );
@@ -153,7 +153,7 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
@@ -231,14 +231,14 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.cardBg,
+                        color: AppColors.cardBgOf(context),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.cardBorder),
+                        border: Border.all(color: AppColors.cardBorderOf(context)),
                       ),
                       child: Text(
                         '${lang.tr('question')} ${quiz.currentIndex + 1} ${lang.tr('of')} ${quiz.questions.length}',
                         style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondaryOf(context),
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
@@ -377,12 +377,12 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
                         decoration: BoxDecoration(
-                          color: AppColors.cardBg,
+                          color: AppColors.cardBgOf(context),
                           borderRadius: BorderRadius.circular(22),
-                          border: Border.all(color: AppColors.cardBorder, width: 1.2),
+                          border: Border.all(color: AppColors.cardBorderOf(context), width: 1.2),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF0F172A).withOpacity(0.04),
+                              color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.04),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -392,7 +392,7 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
                           cleanQuestionText,
                           textAlign: TextAlign.center,
                           style: GoogleFonts.plusJakartaSans(
-                            color: AppColors.textPrimary,
+                            color: AppColors.textPrimaryOf(context),
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             height: 1.45,
@@ -564,11 +564,11 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
     final isCorrect = (optionIndex == correctIndex);
     final letters = ['A', 'B', 'C', 'D'];
 
-    Color bgColor = AppColors.cardBg;
-    Color borderColor = AppColors.cardBorder;
-    Color textColor = AppColors.textPrimary;
-    Color badgeBg = const Color(0xFFF1F5F9);
-    Color badgeText = AppColors.textSecondary;
+    Color bgColor = AppColors.cardBgOf(context);
+    Color borderColor = AppColors.cardBorderOf(context);
+    Color textColor = AppColors.textPrimaryOf(context);
+    Color badgeBg = AppColors.isDark(context) ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    Color badgeText = AppColors.textSecondaryOf(context);
     Widget? trailingIcon;
 
     if (quiz.isAnswerChecked) {

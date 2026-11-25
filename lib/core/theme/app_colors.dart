@@ -27,6 +27,19 @@ class AppColors {
   static const Color darkCard = Color(0xFF1E1B4B);      // Deep Indigo 950
   static const Color darkSurfaceElevated = Color(0xFF1E293B);
 
+  // Dynamic Theme Adaptive Helpers
+  static bool isDark(BuildContext context) => Theme.of(context).brightness == Brightness.dark;
+  static Color backgroundOf(BuildContext context) => isDark(context) ? const Color(0xFF0B0F19) : background;
+  static Color cardBgOf(BuildContext context) => isDark(context) ? const Color(0xFF1E293B) : cardBg;
+  static Color cardBorderOf(BuildContext context) => isDark(context) ? const Color(0xFF334155) : cardBorder;
+  static Color textPrimaryOf(BuildContext context) => isDark(context) ? const Color(0xFFF8FAFC) : textPrimary;
+  static Color textSecondaryOf(BuildContext context) => isDark(context) ? const Color(0xFF94A3B8) : textSecondary;
+  static Color textMutedOf(BuildContext context) => isDark(context) ? const Color(0xFF64748B) : textMuted;
+  static Color surfaceMutedOf(BuildContext context) => isDark(context) ? const Color(0xFF162032) : surfaceMuted;
+  static Color inputBgOf(BuildContext context) => isDark(context) ? const Color(0xFF111827) : const Color(0xFFFFFFFF);
+  static Color glassOf(BuildContext context) => isDark(context) ? const Color(0xEB1E293B) : glassWhite;
+  static Color glassBorderOf(BuildContext context) => isDark(context) ? const Color(0x66334155) : glassBorder;
+
   // Typography
   static const Color textPrimary = Color(0xFF111827);   // Gray 900 (High contrast)
   static const Color textSecondary = Color(0xFF64748B); // Slate 500

@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.cardBg,
+        backgroundColor: AppColors.cardBgOf(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimaryOf(context),
               ),
             ),
             const SizedBox(height: 8),
@@ -332,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final userName = user?.name ?? 'Player';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
@@ -439,12 +439,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       Container(
                         decoration: BoxDecoration(
-                          color: AppColors.cardBg,
+                          color: AppColors.cardBgOf(context),
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.cardBorder),
+                          border: Border.all(color: AppColors.cardBorderOf(context)),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary, size: 20),
+                          icon: Icon(Icons.notifications_outlined, color: AppColors.textPrimaryOf(context), size: 20),
                           onPressed: () {
                             AudioManager().playClick();
                             Navigator.push(
@@ -985,12 +985,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.cardBg,
+                            color: AppColors.cardBgOf(context),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.cardBorder, width: 1),
+                            border: Border.all(color: AppColors.cardBorderOf(context), width: 1),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF0F172A).withOpacity(0.05),
+                                color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.04),
                                 blurRadius: 14,
                                 offset: const Offset(0, 4),
                               ),
@@ -1054,7 +1054,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.plusJakartaSans(
-                                        color: AppColors.textPrimary,
+                                        color: AppColors.textPrimaryOf(context),
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,
                                       ),
@@ -1065,7 +1065,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.plusJakartaSans(
-                                        color: AppColors.textSecondary,
+                                        color: AppColors.textSecondaryOf(context),
                                         fontSize: 11,
                                       ),
                                     ),
@@ -1301,12 +1301,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
+        color: AppColors.cardBgOf(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.cardBorderOf(context)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.03),
+            color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -1326,7 +1326,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             value,
             style: GoogleFonts.plusJakartaSans(
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryOf(context),
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
@@ -1338,7 +1338,7 @@ class _HomeScreenState extends State<HomeScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.plusJakartaSans(
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondaryOf(context),
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),

@@ -44,22 +44,25 @@ class _WalletScreenState extends State<WalletScreen>
   Widget build(BuildContext context) {
     final wallet = context.watch<WalletProvider>();
     final user = context.watch<AuthProvider>().currentUser;
+    final isDark = AppColors.isDark(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           'Digital Wallet',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimaryOf(context),
             letterSpacing: -0.4,
           ),
         ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline_rounded, color: AppColors.primary),
+            icon: Icon(Icons.info_outline_rounded, color: isDark ? const Color(0xFF818CF8) : AppColors.primary),
             onPressed: () {
               AudioManager().playClick();
               _showConversionRulesDialog(context, wallet);
@@ -121,7 +124,7 @@ class _WalletScreenState extends State<WalletScreen>
             const SizedBox(height: 22),
 
             // 3. Financial Summary Metrics Cards Grid
-            _buildMetricsGrid(wallet),
+            _buildMetricsGrid(context, wallet),
             const SizedBox(height: 24),
 
             // 4. Tab bar for Transactions, Rewards, and Withdrawals
@@ -129,26 +132,26 @@ class _WalletScreenState extends State<WalletScreen>
               height: 46,
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: AppColors.surfaceMutedOf(context),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.cardBorder),
+                border: Border.all(color: AppColors.cardBorderOf(context)),
               ),
               child: TabBar(
                 controller: _tabController,
                 indicator: BoxDecoration(
-                  color: AppColors.cardBg,
+                  color: AppColors.cardBgOf(context),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF0F172A).withOpacity(0.06),
+                      color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
                   ],
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.textSecondary,
+                labelColor: isDark ? const Color(0xFF818CF8) : AppColors.primary,
+                unselectedLabelColor: AppColors.textSecondaryOf(context),
                 labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700),
                 unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w500),
                 dividerColor: Colors.transparent,
@@ -180,13 +183,14 @@ class _WalletScreenState extends State<WalletScreen>
     );
   }
 
-  Widget _buildMetricsGrid(WalletProvider wallet) {
+  Widget _buildMetricsGrid(BuildContext context, WalletProvider wallet) {
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: _buildMetricCard(
+                context: context,
                 title: 'Available Balance',
                 value: '₹${wallet.availableBalance.toStringAsFixed(2)}',
                 icon: Icons.account_balance_wallet_rounded,
@@ -197,6 +201,7 @@ class _WalletScreenState extends State<WalletScreen>
             const SizedBox(width: 12),
             Expanded(
               child: _buildMetricCard(
+                context: context,
                 title: 'Available Points',
                 value: '${wallet.availablePoints} Points',
                 icon: Icons.stars_rounded,
@@ -211,6 +216,7 @@ class _WalletScreenState extends State<WalletScreen>
           children: [
             Expanded(
               child: _buildMetricCard(
+                context: context,
                 title: 'Total Withdrawn',
                 value: '₹${wallet.totalWithdrawn.toStringAsFixed(2)}',
                 icon: Icons.check_circle_rounded,
@@ -221,6 +227,7 @@ class _WalletScreenState extends State<WalletScreen>
             const SizedBox(width: 12),
             Expanded(
               child: _buildMetricCard(
+                context: context,
                 title: 'Pending Payout',
                 value: '₹${wallet.pendingWithdrawalsTotal.toStringAsFixed(2)}',
                 icon: Icons.hourglass_top_rounded,
@@ -235,21 +242,23 @@ class _WalletScreenState extends State<WalletScreen>
   }
 
   Widget _buildMetricCard({
+    required BuildContext context,
     required String title,
     required String value,
     required IconData icon,
     required Color iconBg,
     required Color iconColor,
   }) {
+    final isDark = AppColors.isDark(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
+        color: AppColors.cardBgOf(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.cardBorderOf(context)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.02),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -273,7 +282,7 @@ class _WalletScreenState extends State<WalletScreen>
                 Text(
                   title,
                   style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondaryOf(context),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
@@ -282,7 +291,7 @@ class _WalletScreenState extends State<WalletScreen>
                 Text(
                   value,
                   style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimaryOf(context),
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                   ),
@@ -311,12 +320,12 @@ class _WalletScreenState extends State<WalletScreen>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppColors.cardBg,
+            color: AppColors.cardBgOf(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder),
+            border: Border.all(color: AppColors.cardBorderOf(context)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0F172A).withOpacity(0.02),
+                color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -403,12 +412,12 @@ class _WalletScreenState extends State<WalletScreen>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppColors.cardBg,
+            color: AppColors.cardBgOf(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder),
+            border: Border.all(color: AppColors.cardBorderOf(context)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0F172A).withOpacity(0.02),
+                color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -495,12 +504,12 @@ class _WalletScreenState extends State<WalletScreen>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppColors.cardBg,
+            color: AppColors.cardBgOf(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.cardBorder),
+            border: Border.all(color: AppColors.cardBorderOf(context)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0F172A).withOpacity(0.02),
+                color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -607,18 +616,26 @@ class _WalletScreenState extends State<WalletScreen>
   }
 
   void _showConversionRulesDialog(BuildContext context, WalletProvider wallet) {
+    final isDark = AppColors.isDark(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.cardBg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        backgroundColor: AppColors.cardBgOf(context),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+          side: BorderSide(color: AppColors.cardBorderOf(context)),
+        ),
         title: Row(
           children: [
-            const Icon(Icons.currency_rupee_rounded, color: AppColors.primary),
+            Icon(Icons.currency_rupee_rounded, color: isDark ? const Color(0xFF818CF8) : AppColors.primary),
             const SizedBox(width: 8),
             Text(
               'Reward & Conversion Policy',
-              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimaryOf(context),
+              ),
             ),
           ],
         ),
@@ -626,14 +643,14 @@ class _WalletScreenState extends State<WalletScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildRuleItem('Rate', '100 Points = ₹1.00 (100 pts = ₹1.00)'),
-            _buildRuleItem('Minimum Limit', '₹1,000 (${wallet.settings.minWithdrawalPoints} Points)'),
-            _buildRuleItem('Mode', 'Direct UPI Transfer (No bank account or OTP needed)'),
-            _buildRuleItem('Cash Status', wallet.settings.enableCashWithdrawals ? 'Active' : 'In Compliance Testing Mode'),
+            _buildRuleItem(context, 'Rate', '100 Points = ₹1.00 (100 pts = ₹1.00)'),
+            _buildRuleItem(context, 'Minimum Limit', '₹1,000 (${wallet.settings.minWithdrawalPoints} Points)'),
+            _buildRuleItem(context, 'Mode', 'Direct UPI Transfer (No bank account or OTP needed)'),
+            _buildRuleItem(context, 'Cash Status', wallet.settings.enableCashWithdrawals ? 'Active' : 'In Compliance Testing Mode'),
             const SizedBox(height: 10),
             Text(
               'Earned points represent in-game trivia rewards. Payouts are reviewed securely by administrator.',
-              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textSecondary),
+              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textSecondaryOf(context)),
             ),
           ],
         ),
@@ -642,7 +659,7 @@ class _WalletScreenState extends State<WalletScreen>
             child: Text(
               'Close',
               style: GoogleFonts.plusJakartaSans(
-                color: AppColors.primary,
+                color: isDark ? const Color(0xFF818CF8) : AppColors.primary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -653,15 +670,32 @@ class _WalletScreenState extends State<WalletScreen>
     );
   }
 
-  Widget _buildRuleItem(String label, String value) {
+  Widget _buildRuleItem(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$label: ', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
+          SizedBox(
+            width: 90,
+            child: Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.textSecondaryOf(context),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
           Expanded(
-            child: Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textPrimary)),
+            child: Text(
+              value,
+              style: GoogleFonts.plusJakartaSans(
+                color: AppColors.textPrimaryOf(context),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),

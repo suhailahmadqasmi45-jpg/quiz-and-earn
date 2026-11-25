@@ -40,18 +40,20 @@ class _WithdrawalDialogState extends State<WithdrawalDialog> {
         ? points / wallet.settings.pointsPerRupee
         : 0.0;
 
+    final isDark = AppColors.isDark(context);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: AppColors.cardBg,
+          color: AppColors.cardBgOf(context),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.cardBorder, width: 1.2),
+          border: Border.all(color: AppColors.cardBorderOf(context), width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F172A).withOpacity(0.12),
+              color: Colors.black.withOpacity(isDark ? 0.35 : 0.12),
               blurRadius: 28,
               offset: const Offset(0, 10),
             ),
@@ -72,18 +74,18 @@ class _WithdrawalDialogState extends State<WithdrawalDialog> {
                       children: [
                         Container(
                           padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color(0xFFEEF2FF),
+                            color: isDark ? const Color(0xFF1E1B4B) : const Color(0xFFEEF2FF),
                           ),
-                          child: const Icon(Icons.account_balance_wallet_rounded,
-                              color: AppColors.primary, size: 22),
+                          child: Icon(Icons.account_balance_wallet_rounded,
+                              color: isDark ? const Color(0xFF818CF8) : AppColors.primary, size: 22),
                         ),
                         const SizedBox(width: 12),
                         Text(
                           'UPI Redemption',
                           style: GoogleFonts.plusJakartaSans(
-                            color: AppColors.textPrimary,
+                            color: AppColors.textPrimaryOf(context),
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                           ),
@@ -91,7 +93,7 @@ class _WithdrawalDialogState extends State<WithdrawalDialog> {
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
+                      icon: Icon(Icons.close_rounded, color: AppColors.textSecondaryOf(context)),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],

@@ -14,10 +14,10 @@ class AdminProvider with ChangeNotifier {
   final List<UserModel> _users = [
     UserModel(
       uid: 'USR-8901',
-      name: 'Gulshan Kumar',
-      email: 'gulshan.quiz@gmail.com',
+      name: 'Rohan Sharma',
+      email: 'rohan.player@gmail.com',
       mobile: '9876543210',
-      upiId: 'gulshan@okhdfcbank',
+      upiId: 'rohan@okhdfcbank',
       totalQuizPlayed: 32,
       totalCorrectAnswers: 280,
       totalPoints: 3400,

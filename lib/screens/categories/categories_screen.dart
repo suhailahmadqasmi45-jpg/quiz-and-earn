@@ -11,36 +11,39 @@ class CategoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = CategoryModel.defaultCategories;
+    final isDark = AppColors.isDark(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           'Quiz Categories',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimaryOf(context),
             letterSpacing: -0.4,
           ),
         ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 18),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFFEEF2FF),
+              color: isDark ? const Color(0xFF312E81).withOpacity(0.5) : const Color(0xFFEEF2FF),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+              border: Border.all(color: isDark ? const Color(0xFF818CF8).withOpacity(0.3) : AppColors.primary.withOpacity(0.2)),
             ),
             child: Row(
               children: [
-                const Icon(Icons.verified_rounded, color: AppColors.primary, size: 14),
+                Icon(Icons.verified_rounded, color: isDark ? const Color(0xFF818CF8) : AppColors.primary, size: 14),
                 const SizedBox(width: 4),
                 Text(
-                  '500+ Questions',
+                  '10,000+ Questions',
                   style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.primary,
+                    color: isDark ? const Color(0xFF818CF8) : AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),
@@ -85,15 +88,17 @@ class CategoriesScreen extends StatelessWidget {
   }
 
   Widget _buildCategoryCard(BuildContext context, CategoryModel cat) {
+    final isDark = AppColors.isDark(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
+        color: AppColors.cardBgOf(context),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.cardBorder, width: 1.2),
+        border: Border.all(color: AppColors.cardBorderOf(context), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.04),
+            color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
             blurRadius: 16,
             spreadRadius: 0,
             offset: const Offset(0, 6),
@@ -140,7 +145,7 @@ class CategoriesScreen extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -195,7 +200,7 @@ class CategoriesScreen extends StatelessWidget {
                     Text(
                       cat.title,
                       style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimaryOf(context),
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.2,
@@ -207,7 +212,7 @@ class CategoriesScreen extends StatelessWidget {
                     Text(
                       cat.subtitle,
                       style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryOf(context),
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         height: 1.4,
@@ -223,17 +228,20 @@ class CategoriesScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
+                            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF334155) : Colors.transparent,
+                            ),
                           ),
                           child: Row(
                             children: [
                               Icon(Icons.speed_rounded, size: 14, color: cat.primaryColor),
                               const SizedBox(width: 5),
                               Text(
-                                'Easy to Master (L1–40+)',
+                                'Easy to Play (2000+ Qs)',
                                 style: GoogleFonts.plusJakartaSans(
-                                  color: AppColors.textSecondary,
+                                  color: AppColors.textSecondaryOf(context),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),

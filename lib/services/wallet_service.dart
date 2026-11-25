@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/wallet_model.dart';
@@ -13,6 +14,7 @@ class WalletService {
   final List<WalletTransaction> _transactions = [];
   final List<WithdrawalRequest> _withdrawals = [];
   final List<QuizHistoryItem> _quizHistory = [];
+  String? _activeUserId;
 
   AppSettingsModel get settings => _settings;
   List<WalletTransaction> get transactions => List.unmodifiable(_transactions);
@@ -22,7 +24,7 @@ class WalletService {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Load settings
+    // Load app-wide settings
     final settingsJson = prefs.getString('app_settings');
     if (settingsJson != null) {
       try {
@@ -33,98 +35,86 @@ class WalletService {
     if (_settings.minWithdrawalPoints < 100000) {
       _settings = _settings.copyWith(minWithdrawalPoints: 100000);
     }
-
-    // Load transactions
-    final txJson = prefs.getString('wallet_transactions');
-    if (txJson != null) {
-      try {
-        final List<dynamic> list = json.decode(txJson);
-        _transactions.clear();
-        for (final item in list) {
-          _transactions.add(WalletTransaction.fromJson(item as Map<String, dynamic>));
-        }
-      } catch (_) {}
+    // Ensure points conversion: 100 points = ₹1
+    if (_settings.pointsPerRupee != 100) {
+      _settings = _settings.copyWith(pointsPerRupee: 100);
     }
 
-    // Load withdrawal requests
-    final withJson = prefs.getString('withdrawal_requests');
-    if (withJson != null) {
-      try {
-        final List<dynamic> list = json.decode(withJson);
-        _withdrawals.clear();
-        for (final item in list) {
-          _withdrawals.add(WithdrawalRequest.fromJson(item as Map<String, dynamic>));
-        }
-      } catch (_) {}
-    }
-
-    // Load quiz history
-    final histJson = prefs.getString('quiz_history');
-    if (histJson != null) {
-      try {
-        final List<dynamic> list = json.decode(histJson);
-        _quizHistory.clear();
-        for (final item in list) {
-          _quizHistory.add(QuizHistoryItem.fromJson(item as Map<String, dynamic>));
-        }
-      } catch (_) {}
-    }
-
-    // Seed default sample data if empty for a vivid out-of-the-box user experience
-    if (_transactions.isEmpty) {
-      _seedInitialData();
+    // Check if an active user exists to load their isolated wallet
+    final activeUid = prefs.getString('active_session_uid');
+    if (activeUid != null && activeUid.isNotEmpty) {
+      await loadForUser(activeUid);
     }
   }
 
-  void _seedInitialData() {
-    final now = DateTime.now();
-    _transactions.addAll([
-      WalletTransaction(
-        id: 'TX-1001',
-        userId: 'usr_current',
-        title: 'Welcome Bonus Reward',
-        description: 'New player joining bonus points',
-        points: 100,
-        amount: 1.0,
-        type: 'bonus',
-        status: 'Completed',
-        timestamp: now.subtract(const Duration(days: 2)),
-      ),
-      WalletTransaction(
-        id: 'TX-1002',
-        userId: 'usr_current',
-        title: 'Quiz Victory: General Knowledge',
-        description: 'Scored 100% in Easy Level Round',
-        points: 50,
-        amount: 0.5,
-        type: 'quiz_reward',
-        status: 'Completed',
-        timestamp: now.subtract(const Duration(hours: 14)),
-      ),
-    ]);
+  /// Loads wallet, transactions, and quiz history exclusively for the specified user UID
+  Future<void> loadForUser(String uid) async {
+    _activeUserId = uid;
+    _transactions.clear();
+    _withdrawals.clear();
+    _quizHistory.clear();
 
-    _quizHistory.addAll([
-      QuizHistoryItem(
-        id: 'QH-001',
-        userId: 'usr_current',
-        categoryId: 'gk',
-        categoryTitle: 'General Knowledge',
-        questionsAttempted: 10,
-        correctAnswers: 10,
-        pointsEarned: 50,
-        date: now.subtract(const Duration(hours: 14)),
-      ),
-      QuizHistoryItem(
-        id: 'QH-002',
-        userId: 'usr_current',
-        categoryId: 'science',
-        categoryTitle: 'Science & Technology',
-        questionsAttempted: 10,
-        correctAnswers: 8,
-        pointsEarned: 40,
-        date: now.subtract(const Duration(days: 1)),
-      ),
-    ]);
+    final prefs = await SharedPreferences.getInstance();
+
+    // 1. Load user-specific transactions
+    final txJson = prefs.getString('wallet_transactions_$uid');
+    if (txJson != null && txJson.isNotEmpty) {
+      try {
+        final List<dynamic> list = json.decode(txJson);
+        for (final item in list) {
+          _transactions.add(WalletTransaction.fromJson(item as Map<String, dynamic>));
+        }
+      } catch (e) {
+        debugPrint('Error loading transactions for $uid: $e');
+      }
+    }
+
+    // 2. Load user-specific withdrawals
+    final withJson = prefs.getString('withdrawal_requests_$uid');
+    if (withJson != null && withJson.isNotEmpty) {
+      try {
+        final List<dynamic> list = json.decode(withJson);
+        for (final item in list) {
+          _withdrawals.add(WithdrawalRequest.fromJson(item as Map<String, dynamic>));
+        }
+      } catch (e) {
+        debugPrint('Error loading withdrawals for $uid: $e');
+      }
+    }
+
+    // 3. Load user-specific quiz history
+    final histJson = prefs.getString('quiz_history_$uid');
+    if (histJson != null && histJson.isNotEmpty) {
+      try {
+        final List<dynamic> list = json.decode(histJson);
+        for (final item in list) {
+          _quizHistory.add(QuizHistoryItem.fromJson(item as Map<String, dynamic>));
+        }
+      } catch (e) {
+        debugPrint('Error loading quiz history for $uid: $e');
+      }
+    }
+  }
+
+  /// Clears in-memory wallet data on logout
+  void clearUserData() {
+    _activeUserId = null;
+    _transactions.clear();
+    _withdrawals.clear();
+    _quizHistory.clear();
+  }
+
+  /// Deletes stored user wallet records on account deletion
+  Future<void> deleteUserData(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('wallet_transactions_$uid');
+      await prefs.remove('withdrawal_requests_$uid');
+      await prefs.remove('quiz_history_$uid');
+    } catch (_) {}
+    if (_activeUserId == uid) {
+      clearUserData();
+    }
   }
 
   double calculateRewardValue(int points) {
@@ -141,7 +131,7 @@ class WalletService {
     required int pointsEarned,
   }) async {
     final user = AuthService().currentUser;
-    final uid = user?.uid ?? 'anonymous';
+    final uid = user?.uid ?? _activeUserId ?? 'anonymous';
 
     // 1. Update user total stats
     await AuthService().updateUserStats(
@@ -151,41 +141,44 @@ class WalletService {
       pointsDelta: pointsEarned,
     );
 
-    // 2. Add Transaction
-    if (pointsEarned > 0) {
-      final tx = WalletTransaction(
-        id: 'TX-${const Uuid().v4().substring(0, 8).toUpperCase()}',
-        userId: uid,
-        title: 'Quiz Reward: $categoryTitle',
-        description: '$correctAnswers/$questionsAttempted correct answers',
-        points: pointsEarned,
-        amount: calculateRewardValue(pointsEarned),
-        type: 'quiz_reward',
-        status: 'Completed',
-      );
-      _transactions.insert(0, tx);
-      await _persistTransactions();
-    }
+    final now = DateTime.now();
 
-    // 3. Add Quiz History
-    final history = QuizHistoryItem(
-      id: 'QH-${const Uuid().v4().substring(0, 8).toUpperCase()}',
+    // 2. Add quiz history item for this user
+    final historyItem = QuizHistoryItem(
+      id: 'QH-${const Uuid().v4().substring(0, 8)}',
       userId: uid,
       categoryId: categoryId,
       categoryTitle: categoryTitle,
       questionsAttempted: questionsAttempted,
       correctAnswers: correctAnswers,
       pointsEarned: pointsEarned,
+      date: now,
     );
-    _quizHistory.insert(0, history);
-    await _persistQuizHistory();
+    _quizHistory.insert(0, historyItem);
+    await _persistHistory(uid);
+
+    // 3. Add wallet transaction if points were earned
+    if (pointsEarned > 0) {
+      final tx = WalletTransaction(
+        id: 'TX-${const Uuid().v4().substring(0, 8)}',
+        userId: uid,
+        title: 'Quiz Reward: $categoryTitle',
+        description: 'Earned $pointsEarned points ($correctAnswers/$questionsAttempted correct)',
+        points: pointsEarned,
+        amount: calculateRewardValue(pointsEarned),
+        type: 'quiz_reward',
+        status: 'Completed',
+        timestamp: now,
+      );
+      _transactions.insert(0, tx);
+      await _persistTransactions(uid);
+    }
   }
 
   Future<void> recordDailyBonusTransaction({required int points}) async {
     final user = AuthService().currentUser;
-    final uid = user?.uid ?? 'anonymous';
+    final uid = user?.uid ?? _activeUserId ?? 'anonymous';
 
-    // 1. Update user total stats
     await AuthService().updateUserStats(
       quizPlayedDelta: 0,
       correctDelta: 0,
@@ -193,19 +186,19 @@ class WalletService {
       pointsDelta: points,
     );
 
-    // 2. Add Transaction
     final tx = WalletTransaction(
-      id: 'TX-${const Uuid().v4().substring(0, 8).toUpperCase()}',
+      id: 'TX-${const Uuid().v4().substring(0, 8)}',
       userId: uid,
-      title: 'Daily Bonus Reward',
-      description: 'Daily streak check-in reward',
+      title: 'Daily Check-in Bonus',
+      description: 'Awarded $points daily engagement points',
       points: points,
       amount: calculateRewardValue(points),
-      type: 'bonus',
+      type: 'daily_bonus',
       status: 'Completed',
+      timestamp: DateTime.now(),
     );
     _transactions.insert(0, tx);
-    await _persistTransactions();
+    await _persistTransactions(uid);
   }
 
   Future<String?> submitWithdrawal({
@@ -214,61 +207,66 @@ class WalletService {
   }) async {
     final user = AuthService().currentUser;
     if (user == null) {
-      return 'Please sign in to submit a withdrawal request.';
+      return 'Please sign in to request a withdrawal.';
     }
 
-    if (!_settings.enableCashWithdrawals) {
-      return 'Cash redemptions are currently suspended pending regulatory compliance.';
+    if (upiId.trim().isEmpty) {
+      return 'Please provide a valid UPI ID (e.g., name@okhdfcbank).';
     }
 
     if (pointsToRedeem < _settings.minWithdrawalPoints) {
-      return 'Minimum withdrawal requirement is ${_settings.minWithdrawalPoints} points (₹${calculateRewardValue(_settings.minWithdrawalPoints).toStringAsFixed(0)}).';
+      return 'Minimum withdrawal threshold is ${_settings.minWithdrawalPoints} points (₹${calculateRewardValue(_settings.minWithdrawalPoints).toStringAsFixed(0)}).';
     }
 
-    if (user.availablePoints < pointsToRedeem) {
-      return 'Insufficient points in wallet. You have ${user.availablePoints} points.';
-    }
-
-    final cleanUpi = upiId.trim();
-    if (!cleanUpi.contains('@') || cleanUpi.length < 5) {
-      return 'Please enter a valid UPI ID (e.g., yourname@bank).';
+    if (pointsToRedeem > user.availablePoints) {
+      return 'Insufficient balance. You currently have ${user.availablePoints} points.';
     }
 
     final double amount = calculateRewardValue(pointsToRedeem);
-    final reqId = 'WREQ-${const Uuid().v4().substring(0, 8).toUpperCase()}';
+    final now = DateTime.now();
+    final withId = 'WD-${const Uuid().v4().substring(0, 8)}';
 
-    // Deduct points from user
-    await AuthService().deductPointsForWithdrawal(pointsToRedeem, amount);
-
+    // 1. Create withdrawal request
     final req = WithdrawalRequest(
-      id: reqId,
+      id: withId,
       userId: user.uid,
       userName: user.name,
       userEmail: user.email,
-      userMobile: user.mobile,
-      upiId: cleanUpi,
+      userMobile: user.mobile.isNotEmpty ? user.mobile : 'N/A',
+      upiId: upiId.trim(),
       pointsDeducted: pointsToRedeem,
       amount: amount,
       status: 'Pending',
+      requestDate: now,
     );
     _withdrawals.insert(0, req);
-    await _persistWithdrawals();
+    await _persistWithdrawals(user.uid);
 
-    // Create wallet transaction
+    // 2. Record ledger transaction
     final tx = WalletTransaction(
-      id: 'TX-${const Uuid().v4().substring(0, 8).toUpperCase()}',
+      id: 'TX-${const Uuid().v4().substring(0, 8)}',
       userId: user.uid,
-      title: 'UPI Withdrawal Request',
-      description: 'Request #$reqId to $cleanUpi',
+      title: 'Withdrawal Initiated',
+      description: 'Transfer of ₹${amount.toStringAsFixed(2)} to ${upiId.trim()}',
       points: -pointsToRedeem,
-      amount: -amount,
+      amount: amount,
       type: 'withdrawal',
       status: 'Pending',
+      timestamp: now,
     );
     _transactions.insert(0, tx);
-    await _persistTransactions();
+    await _persistTransactions(user.uid);
 
-    return null; // Success (no error)
+    // 3. Deduct points from active user
+    await AuthService().deductPointsForWithdrawal(pointsToRedeem, amount);
+
+    return null; // Success!
+  }
+
+  Future<void> updateSettings(AppSettingsModel newSettings) async {
+    _settings = newSettings;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_settings_v2', json.encode(newSettings.toJson()));
   }
 
   Future<void> updateWithdrawalStatus({
@@ -276,38 +274,44 @@ class WalletService {
     required String newStatus,
     String? remarks,
   }) async {
-    final idx = _withdrawals.indexWhere((w) => w.id == requestId);
-    if (idx >= 0) {
-      _withdrawals[idx] = _withdrawals[idx].copyWith(
+    final index = _withdrawals.indexWhere((w) => w.id == requestId);
+    if (index != -1) {
+      final old = _withdrawals[index];
+      _withdrawals[index] = WithdrawalRequest(
+        id: old.id,
+        userId: old.userId,
+        userName: old.userName,
+        userEmail: old.userEmail,
+        userMobile: old.userMobile,
+        upiId: old.upiId,
+        pointsDeducted: old.pointsDeducted,
+        amount: old.amount,
         status: newStatus,
+        requestDate: old.requestDate,
         processedDate: DateTime.now(),
-        adminRemarks: remarks,
+        adminRemarks: remarks ?? old.adminRemarks,
       );
-      await _persistWithdrawals();
+      if (_activeUserId != null) {
+        await _persistWithdrawals(_activeUserId!);
+      }
     }
   }
 
-  Future<void> updateSettings(AppSettingsModel newSettings) async {
-    _settings = newSettings;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('app_settings', json.encode(newSettings.toJson()));
-  }
-
-  Future<void> _persistTransactions() async {
+  Future<void> _persistTransactions(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     final list = _transactions.map((t) => t.toJson()).toList();
-    await prefs.setString('wallet_transactions', json.encode(list));
+    await prefs.setString('wallet_transactions_$uid', json.encode(list));
   }
 
-  Future<void> _persistWithdrawals() async {
+  Future<void> _persistWithdrawals(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     final list = _withdrawals.map((w) => w.toJson()).toList();
-    await prefs.setString('withdrawal_requests', json.encode(list));
+    await prefs.setString('withdrawal_requests_$uid', json.encode(list));
   }
 
-  Future<void> _persistQuizHistory() async {
+  Future<void> _persistHistory(String uid) async {
     final prefs = await SharedPreferences.getInstance();
-    final list = _quizHistory.map((q) => q.toJson()).toList();
-    await prefs.setString('quiz_history', json.encode(list));
+    final list = _quizHistory.map((h) => h.toJson()).toList();
+    await prefs.setString('quiz_history_$uid', json.encode(list));
   }
 }

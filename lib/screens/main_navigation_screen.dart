@@ -48,9 +48,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     ];
 
     final lang = context.watch<LanguageProvider>();
+    final isDark = AppColors.isDark(context);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
@@ -64,16 +65,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             borderRadius: BorderRadius.circular(36),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF0F172A).withOpacity(0.12),
+                color: Colors.black.withOpacity(isDark ? 0.35 : 0.12),
                 blurRadius: 28,
                 offset: const Offset(0, 10),
                 spreadRadius: 1,
               ),
-              BoxShadow(
-                color: Colors.white.withOpacity(0.7),
-                blurRadius: 8,
-                offset: const Offset(0, -1),
-              ),
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.7),
+                  blurRadius: 8,
+                  offset: const Offset(0, -1),
+                ),
             ],
           ),
           child: ClipRRect(
@@ -86,14 +88,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withOpacity(0.92),
-                      Colors.white.withOpacity(0.76),
-                    ],
+                    colors: isDark
+                        ? [
+                            const Color(0xFF1E293B).withOpacity(0.95),
+                            const Color(0xFF0F172A).withOpacity(0.90),
+                          ]
+                        : [
+                            Colors.white.withOpacity(0.92),
+                            Colors.white.withOpacity(0.76),
+                          ],
                   ),
                   borderRadius: BorderRadius.circular(36),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.95),
+                    color: isDark ? const Color(0xFF334155).withOpacity(0.8) : Colors.white.withOpacity(0.95),
                     width: 1.5,
                   ),
                 ),
@@ -116,6 +123,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Widget _buildLiquidNavItem(int index, IconData icon, String label) {
     final isSelected = (_currentIndex == index);
+    final isDark = AppColors.isDark(context);
 
     return GestureDetector(
       onTap: () => _onTabSelected(index),
@@ -131,20 +139,25 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: isSelected
-                  ? const LinearGradient(
+                  ? LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF312E81), // Deep Indigo
-                        Color(0xFF4338CA), // Royal Indigo
-                      ],
+                      colors: isDark
+                          ? [
+                              const Color(0xFF4F46E5), // Indigo
+                              const Color(0xFF6366F1), // Royal Indigo
+                            ]
+                          : [
+                              const Color(0xFF312E81), // Deep Indigo
+                              const Color(0xFF4338CA), // Royal Indigo
+                            ],
                     )
                   : null,
               color: isSelected ? null : Colors.transparent,
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: const Color(0xFF4338CA).withOpacity(0.35),
+                        color: (isDark ? const Color(0xFF6366F1) : const Color(0xFF4338CA)).withOpacity(0.35),
                         blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
@@ -156,7 +169,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               duration: const Duration(milliseconds: 200),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
                 size: 20,
               ),
             ),
@@ -165,7 +180,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           Text(
             label,
             style: GoogleFonts.plusJakartaSans(
-              color: isSelected ? const Color(0xFF312E81) : const Color(0xFF64748B),
+              color: isSelected
+                  ? (isDark ? const Color(0xFF818CF8) : const Color(0xFF312E81))
+                  : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
               fontSize: 11,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
               letterSpacing: -0.2,

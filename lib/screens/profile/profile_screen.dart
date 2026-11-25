@@ -16,10 +16,16 @@ import '../legal/legal_screens.dart';
 import '../auth/login_screen.dart';
 import '../admin/admin_login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final Function(int)? onNavigateTab;
 
   const ProfileScreen({super.key, this.onNavigateTab});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _pickProfileImage(BuildContext context, ImageSource source) async {
     AudioManager().playClick();
@@ -137,13 +143,16 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.cardBg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: Text('Sign Out', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-        content: Text('Are you sure you want to log out of Quiz & Earn?', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontSize: 13)),
+        backgroundColor: AppColors.cardBgOf(context),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+          side: BorderSide(color: AppColors.cardBorderOf(context)),
+        ),
+        title: Text('Sign Out', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: AppColors.textPrimaryOf(context))),
+        content: Text('Are you sure you want to log out of Quiz & Earn?', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondaryOf(context), fontSize: 13)),
         actions: [
           TextButton(
-            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondaryOf(context), fontWeight: FontWeight.w600)),
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton(
@@ -171,16 +180,19 @@ class ProfileScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppColors.cardBg,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        backgroundColor: AppColors.cardBgOf(context),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+          side: BorderSide(color: AppColors.cardBorderOf(context)),
+        ),
         title: Text('Delete Account', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: AppColors.wrong)),
         content: Text(
           'This action is irreversible. All earned points, wallet balance, and quiz progress will be permanently deleted.',
-          style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontSize: 13),
+          style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondaryOf(context), fontSize: 13),
         ),
         actions: [
           TextButton(
-            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
+            child: Text('Cancel', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondaryOf(context), fontWeight: FontWeight.w600)),
             onPressed: () => Navigator.pop(context),
           ),
           ElevatedButton(
@@ -222,22 +234,22 @@ class ProfileScreen extends StatelessWidget {
         : 'November 2026';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           'My Profile',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimaryOf(context),
             letterSpacing: -0.4,
           ),
         ),
         elevation: 0,
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
+            icon: Icon(Icons.edit_outlined, color: AppColors.isDark(context) ? const Color(0xFF818CF8) : AppColors.primary),
             onPressed: () {
               AudioManager().playClick();
               Navigator.push(
@@ -258,9 +270,9 @@ class ProfileScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
-                color: AppColors.cardBg,
+                color: AppColors.cardBgOf(context),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.cardBorder, width: 1.2),
+                border: Border.all(color: AppColors.cardBorderOf(context), width: 1.2),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF0F172A).withOpacity(0.04),
@@ -361,9 +373,9 @@ class ProfileScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.cardBg,
+                color: AppColors.cardBgOf(context),
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: AppColors.cardBorder, width: 1.2),
+                border: Border.all(color: AppColors.cardBorderOf(context), width: 1.2),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0xFF0F172A).withOpacity(0.03),
@@ -574,8 +586,8 @@ class ProfileScreen extends StatelessWidget {
                 iconBg: const Color(0xFFEEF2FF),
                 iconColor: AppColors.primary,
                 onTap: () {
-                  if (onNavigateTab != null) {
-                    onNavigateTab!(2);
+                  if (widget.onNavigateTab != null) {
+                    widget.onNavigateTab!(2);
                   }
                 },
               ),
@@ -795,12 +807,12 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
+        color: AppColors.cardBgOf(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.cardBorderOf(context)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.02),
+            color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -824,7 +836,7 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   value,
                   style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimaryOf(context),
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -835,7 +847,7 @@ class ProfileScreen extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondaryOf(context),
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -851,12 +863,12 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildNavigationGroup(List<Widget> items) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
+        color: AppColors.cardBgOf(context),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: AppColors.cardBorderOf(context)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.02),
+            color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -893,7 +905,7 @@ class ProfileScreen extends StatelessWidget {
       title: Text(
         title,
         style: GoogleFonts.plusJakartaSans(
-          color: AppColors.textPrimary,
+          color: AppColors.textPrimaryOf(context),
           fontSize: 14,
           fontWeight: FontWeight.w700,
         ),
@@ -901,11 +913,11 @@ class ProfileScreen extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: GoogleFonts.plusJakartaSans(
-          color: AppColors.textSecondary,
+          color: AppColors.textSecondaryOf(context),
           fontSize: 12,
         ),
       ),
-      trailing: trailing ?? const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMuted),
+      trailing: trailing ?? Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMutedOf(context)),
       onTap: () {
         AudioManager().playClick();
         onTap();

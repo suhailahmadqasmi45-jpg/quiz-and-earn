@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'QUIZ & EARN',
                     style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimaryOf(context),
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Compete in trivia. Win real points. Claim rewards.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondaryOf(context),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -127,12 +127,12 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.cardBg,
+                  color: AppColors.cardBgOf(context),
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: AppColors.cardBorderOf(context)),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF0F172A).withOpacity(0.03),
+                      color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.03),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: Column(
                   children: [
-                    _buildFeaturePill(Icons.quiz_rounded, '500+ Verified Trivia Questions', const Color(0xFFCFFAFE), AppColors.accent),
+                    _buildFeaturePill(Icons.quiz_rounded, '10,000+ Easy Trivia Questions', const Color(0xFFCFFAFE), AppColors.accent),
                     const SizedBox(height: 14),
                     _buildFeaturePill(Icons.credit_card_rounded, '3D ATM-Style Digital Reward Card', const Color(0xFFFEF3C7), AppColors.goldDark),
                     const SizedBox(height: 14),
@@ -157,12 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 54,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.textPrimary,
+                        backgroundColor: AppColors.cardBgOf(context),
+                        foregroundColor: AppColors.textPrimaryOf(context),
                         elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: const BorderSide(color: AppColors.cardBorder),
+                          side: BorderSide(color: AppColors.cardBorderOf(context)),
                         ),
                       ),
                       onPressed: auth.isLoading ? null : _handleGoogleSignIn,
@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
+                                    color: AppColors.textPrimaryOf(context),
                                   ),
                                 ),
                               ],
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'By continuing, you agree to our Terms of Service & Privacy Policy.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondaryOf(context),
                       fontSize: 11,
                     ),
                   ),
@@ -234,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Text(
             text,
             style: GoogleFonts.plusJakartaSans(
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryOf(context),
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),

@@ -10,13 +10,14 @@ class QuizRepository {
 
   final List<QuestionModel> _questions = [];
   final Set<String> _seenQuestionIds = {};
+  String? _activeUserId;
   bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
   List<QuestionModel> get allQuestions => List.unmodifiable(_questions);
 
-  Future<void> init() async {
-    if (_isInitialized) return;
+  Future<void> init({String? userId}) async {
+    if (_isInitialized && userId == _activeUserId) return;
     try {
       final jsonString = await rootBundle.loadString('assets/data/questions.json');
       final List<dynamic> jsonList = json.decode(jsonString);
@@ -41,14 +42,44 @@ class QuizRepository {
         }
       }
 
-      // Load seen question IDs to prevent repetition
-      final seen = prefs.getStringList('seen_quiz_questions') ?? [];
-      _seenQuestionIds.addAll(seen);
+      if (userId != null && userId.isNotEmpty) {
+        await loadSeenQuestionsForUser(userId);
+      } else {
+        // Fallback seen question IDs to prevent repetition
+        final seen = prefs.getStringList('seen_quiz_questions') ?? [];
+        _seenQuestionIds.clear();
+        _seenQuestionIds.addAll(seen);
+      }
 
       _isInitialized = true;
     } catch (e) {
       // If error occurs, fallback gracefully
       _isInitialized = true;
+    }
+  }
+
+  Future<void> loadSeenQuestionsForUser(String uid) async {
+    _activeUserId = uid;
+    _seenQuestionIds.clear();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final seen = prefs.getStringList('seen_quiz_questions_$uid') ?? [];
+      _seenQuestionIds.addAll(seen);
+    } catch (_) {}
+  }
+
+  void clearActiveUser() {
+    _activeUserId = null;
+    _seenQuestionIds.clear();
+  }
+
+  Future<void> clearSeenQuestionsForUser(String uid) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('seen_quiz_questions_$uid');
+    } catch (_) {}
+    if (_activeUserId == uid) {
+      _seenQuestionIds.clear();
     }
   }
 
@@ -60,14 +91,31 @@ class QuizRepository {
     return list;
   }
 
+  bool isCategoryExhausted(String categoryId) {
+    final categoryQuestions = _questions
+        .where((q) => q.categoryId == categoryId && q.isPublished)
+        .toList();
+    if (categoryQuestions.isEmpty) return false;
+    final unseen = categoryQuestions.where((q) => !_seenQuestionIds.contains(q.id)).toList();
+    return unseen.isEmpty;
+  }
+
   void resetSeenQuestions() {
     _seenQuestionIds.clear();
     _persistSeenQuestions();
   }
 
+  void resetCategorySeen(String categoryId) {
+    final catIds = _questions
+        .where((q) => q.categoryId == categoryId)
+        .map((q) => q.id)
+        .toSet();
+    _seenQuestionIds.removeWhere((id) => catIds.contains(id));
+    _persistSeenQuestions();
+  }
+
   /// Serves questions for a round without repeating questions.
-  /// If the pool of unseen questions in this category is exhausted,
-  /// resets seen records for this category so the quiz is truly UNLIMITED.
+  /// Options are properly shuffled so correct answers are distributed evenly across A, B, C, D!
   List<QuestionModel> getQuestionsForRound(String categoryId, {int count = 10, int startLevel = 1}) {
     final categoryQuestions = _questions
         .where((q) => q.categoryId == categoryId && q.isPublished)
@@ -75,7 +123,7 @@ class QuizRepository {
 
     if (categoryQuestions.isEmpty) return [];
 
-    // Filter out already seen questions to guarantee NO repetition!
+    // Filter out already seen questions for this specific user to guarantee NO repetition!
     List<QuestionModel> unseen = categoryQuestions
         .where((q) => !_seenQuestionIds.contains(q.id))
         .toList();
@@ -100,19 +148,24 @@ class QuizRepository {
       selected = unseen.take(count).toList();
     }
 
-    // Record chosen questions as seen to prevent repetition
+    // Record chosen questions as seen to prevent repetition for this user
     for (final q in selected) {
       _seenQuestionIds.add(q.id);
     }
     _persistSeenQuestions();
 
-    return selected;
+    // Ensure every question has its options shuffled and correctOptionIndex mapped dynamically
+    return selected.map((q) => q.withShuffledOptions()).toList();
   }
 
   Future<void> _persistSeenQuestions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('seen_quiz_questions', _seenQuestionIds.toList());
+      if (_activeUserId != null && _activeUserId!.isNotEmpty) {
+        await prefs.setStringList('seen_quiz_questions_$_activeUserId', _seenQuestionIds.toList());
+      } else {
+        await prefs.setStringList('seen_quiz_questions', _seenQuestionIds.toList());
+      }
     } catch (_) {}
   }
 

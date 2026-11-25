@@ -85,6 +85,30 @@ class QuestionModel {
     return explanation;
   }
 
+  QuestionModel withShuffledOptions() {
+    final correctOptionText = options[correctOptionIndex];
+    final indexed = List.generate(options.length, (i) => i);
+    indexed.shuffle();
+
+    final newOptions = indexed.map((i) => options[i]).toList();
+    final newCorrectIndex = newOptions.indexOf(correctOptionText);
+
+    final newOptionsHi = (optionsHi != null && optionsHi!.length == options.length)
+        ? indexed.map((i) => optionsHi![i]).toList()
+        : null;
+
+    final newOptionsHinglish = (optionsHinglish != null && optionsHinglish!.length == options.length)
+        ? indexed.map((i) => optionsHinglish![i]).toList()
+        : null;
+
+    return copyWith(
+      options: newOptions,
+      optionsHi: newOptionsHi,
+      optionsHinglish: newOptionsHinglish,
+      correctOptionIndex: newCorrectIndex,
+    );
+  }
+
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
     return QuestionModel(
       id: json['id'] as String,
@@ -141,30 +165,46 @@ class QuestionModel {
     String? id,
     String? categoryId,
     String? questionText,
+    String? questionTextHi,
+    String? questionTextHinglish,
     String? imageUrl,
     List<String>? options,
+    List<String>? optionsHi,
+    List<String>? optionsHinglish,
     int? correctOptionIndex,
     int? difficultyLevel,
     String? difficultyTitle,
     int? timerDuration,
     int? pointsReward,
     String? explanation,
+    String? explanationHi,
+    String? explanationHinglish,
     String? hintText,
+    String? hintTextHi,
+    String? hintTextHinglish,
     bool? isPublished,
   }) {
     return QuestionModel(
       id: id ?? this.id,
       categoryId: categoryId ?? this.categoryId,
       questionText: questionText ?? this.questionText,
+      questionTextHi: questionTextHi ?? this.questionTextHi,
+      questionTextHinglish: questionTextHinglish ?? this.questionTextHinglish,
       imageUrl: imageUrl ?? this.imageUrl,
       options: options ?? this.options,
+      optionsHi: optionsHi ?? this.optionsHi,
+      optionsHinglish: optionsHinglish ?? this.optionsHinglish,
       correctOptionIndex: correctOptionIndex ?? this.correctOptionIndex,
       difficultyLevel: difficultyLevel ?? this.difficultyLevel,
       difficultyTitle: difficultyTitle ?? this.difficultyTitle,
       timerDuration: timerDuration ?? this.timerDuration,
       pointsReward: pointsReward ?? this.pointsReward,
       explanation: explanation ?? this.explanation,
+      explanationHi: explanationHi ?? this.explanationHi,
+      explanationHinglish: explanationHinglish ?? this.explanationHinglish,
       hintText: hintText ?? this.hintText,
+      hintTextHi: hintTextHi ?? this.hintTextHi,
+      hintTextHinglish: hintTextHinglish ?? this.hintTextHinglish,
       isPublished: isPublished ?? this.isPublished,
     );
   }

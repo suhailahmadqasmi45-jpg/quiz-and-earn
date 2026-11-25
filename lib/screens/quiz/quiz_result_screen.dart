@@ -69,7 +69,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
         : 0.0;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       body: Stack(
         children: [
           // Confetti celebratory burst
@@ -147,7 +147,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                     height: 130,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.cardBg,
+                      color: AppColors.cardBgOf(context),
                       border: Border.all(color: AppColors.primary, width: 3.5),
                       boxShadow: [
                         BoxShadow(
@@ -266,12 +266,12 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.cardBg,
+                      color: AppColors.cardBgOf(context),
                       borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: AppColors.cardBorder),
+                      border: Border.all(color: AppColors.cardBorderOf(context)),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF0F172A).withOpacity(0.03),
+                          color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.03),
                           blurRadius: 14,
                           offset: const Offset(0, 4),
                         ),
@@ -279,7 +279,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                     ),
                     child: Column(
                       children: [
-                        _buildStatRow('Questions Attempted', '${quiz.questions.length}', AppColors.textPrimary),
+                        _buildStatRow('Questions Attempted', '${quiz.questions.length}', AppColors.textPrimaryOf(context)),
                         const Divider(height: 20),
                         _buildStatRow('Correct Answers', '${quiz.correctCount}', AppColors.correct),
                         const Divider(height: 20),
@@ -324,8 +324,8 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                     height: 52,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: AppColors.cardBg,
-                        side: const BorderSide(color: AppColors.cardBorder),
+                        backgroundColor: AppColors.cardBgOf(context),
+                        side: BorderSide(color: AppColors.cardBorderOf(context)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -333,7 +333,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                       child: Text(
                         'Return to Dashboard',
                         style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.textPrimary,
+                          color: AppColors.textPrimaryOf(context),
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -361,7 +361,7 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
         Text(
           label,
           style: GoogleFonts.plusJakartaSans(
-            color: AppColors.textSecondary,
+            color: AppColors.textSecondaryOf(context),
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),

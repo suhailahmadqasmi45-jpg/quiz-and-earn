@@ -31,7 +31,7 @@ class CategoryModel {
       icon: Icons.movie_creation_rounded,
       primaryColor: AppColors.catMoviesPrimary,
       secondaryColor: AppColors.catMoviesSecondary,
-      totalQuestions: 100,
+      totalQuestions: 2050,
     ),
     CategoryModel(
       id: 'gk',
@@ -41,7 +41,7 @@ class CategoryModel {
       icon: Icons.public_rounded,
       primaryColor: AppColors.catGkPrimary,
       secondaryColor: AppColors.catGkSecondary,
-      totalQuestions: 100,
+      totalQuestions: 2050,
     ),
     CategoryModel(
       id: 'science',
@@ -51,7 +51,7 @@ class CategoryModel {
       icon: Icons.biotech_rounded,
       primaryColor: AppColors.catSciencePrimary,
       secondaryColor: AppColors.catScienceSecondary,
-      totalQuestions: 100,
+      totalQuestions: 2050,
     ),
     CategoryModel(
       id: 'math',
@@ -61,17 +61,17 @@ class CategoryModel {
       icon: Icons.calculate_rounded,
       primaryColor: AppColors.catMathPrimary,
       secondaryColor: AppColors.catMathSecondary,
-      totalQuestions: 100,
+      totalQuestions: 2050,
     ),
     CategoryModel(
       id: 'sports',
       title: 'Sports & Entertainment',
-      subtitle: 'Cricket, Movies, Music & Champions',
+      subtitle: 'Cricket, Football, Tennis & Champions',
       bannerAsset: 'assets/images/category_sports.png',
       icon: Icons.emoji_events_rounded,
       primaryColor: AppColors.catSportsPrimary,
       secondaryColor: AppColors.catSportsSecondary,
-      totalQuestions: 100,
+      totalQuestions: 2050,
     ),
     CategoryModel(
       id: 'image',
@@ -81,7 +81,7 @@ class CategoryModel {
       icon: Icons.image_search_rounded,
       primaryColor: AppColors.catImagePrimary,
       secondaryColor: AppColors.catImageSecondary,
-      totalQuestions: 100,
+      totalQuestions: 520,
     ),
   ];
 }

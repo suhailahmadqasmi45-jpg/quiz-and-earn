@@ -75,17 +75,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           widget.focusUpiField ? 'Update UPI ID' : 'Edit Profile',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 20,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimaryOf(context),
           ),
         ),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
         elevation: 0,
       ),
       body: SafeArea(
@@ -261,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Text(
             label,
             style: GoogleFonts.plusJakartaSans(
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryOf(context),
               fontSize: 13,
               fontWeight: FontWeight.w700,
             ),
@@ -274,17 +274,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   InputDecoration _buildInputDecoration(String hint) {
     return InputDecoration(
       filled: true,
-      fillColor: AppColors.cardBg,
+      fillColor: AppColors.cardBgOf(context),
       hintText: hint,
-      hintStyle: GoogleFonts.plusJakartaSans(color: AppColors.textMuted, fontSize: 13),
+      hintStyle: GoogleFonts.plusJakartaSans(color: AppColors.textMutedOf(context), fontSize: 13),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorderOf(context)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorderOf(context)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),

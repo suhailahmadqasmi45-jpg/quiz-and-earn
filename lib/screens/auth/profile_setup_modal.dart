@@ -106,14 +106,14 @@ class _ProfileSetupModalState extends State<ProfileSetupModal> {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            color: AppColors.cardBgOf(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             boxShadow: [
               BoxShadow(
-                color: Color(0x33000000),
+                color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.35 : 0.15),
                 blurRadius: 24,
-                offset: Offset(0, -6),
+                offset: const Offset(0, -6),
               ),
             ],
           ),
@@ -167,7 +167,7 @@ class _ProfileSetupModalState extends State<ProfileSetupModal> {
                             Text(
                               'Complete Your Profile',
                               style: GoogleFonts.plusJakartaSans(
-                                color: AppColors.textPrimary,
+                                color: AppColors.textPrimaryOf(context),
                                 fontSize: 19,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.4,
@@ -381,7 +381,7 @@ class _ProfileSetupModalState extends State<ProfileSetupModal> {
       child: Text(
         label,
         style: GoogleFonts.plusJakartaSans(
-          color: AppColors.textPrimary,
+          color: AppColors.textPrimaryOf(context),
           fontSize: 13,
           fontWeight: FontWeight.w700,
         ),
@@ -393,17 +393,17 @@ class _ProfileSetupModalState extends State<ProfileSetupModal> {
     return InputDecoration(
       prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
       filled: true,
-      fillColor: const Color(0xFFF8FAFC),
+      fillColor: AppColors.surfaceMutedOf(context),
       hintText: hint,
-      hintStyle: GoogleFonts.plusJakartaSans(color: AppColors.textMuted, fontSize: 13),
+      hintStyle: GoogleFonts.plusJakartaSans(color: AppColors.textMutedOf(context), fontSize: 13),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorderOf(context)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.cardBorder),
+        borderSide: BorderSide(color: AppColors.cardBorderOf(context)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),

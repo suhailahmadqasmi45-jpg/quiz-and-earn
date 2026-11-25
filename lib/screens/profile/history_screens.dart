@@ -14,14 +14,14 @@ class QuizHistoryScreen extends StatelessWidget {
     final history = wallet.quizHistory;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           'My Quiz History',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 20,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimaryOf(context),
           ),
         ),
       ),
@@ -29,7 +29,7 @@ class QuizHistoryScreen extends StatelessWidget {
           ? Center(
               child: Text(
                 'No quizzes played yet.',
-                style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontSize: 14),
+                style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondaryOf(context), fontSize: 14),
               ),
             )
           : ListView.builder(
@@ -42,12 +42,12 @@ class QuizHistoryScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.cardBg,
+                    color: AppColors.cardBgOf(context),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: AppColors.cardBorderOf(context)),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF0F172A).withOpacity(0.02),
+                        color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -158,14 +158,14 @@ class EarningsHistoryScreen extends StatelessWidget {
     final transactions = wallet.transactions;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           'Earnings History',
           style: GoogleFonts.plusJakartaSans(
             fontSize: 20,
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: AppColors.textPrimaryOf(context),
           ),
         ),
       ),
@@ -173,7 +173,7 @@ class EarningsHistoryScreen extends StatelessWidget {
           ? Center(
               child: Text(
                 'No earnings records found.',
-                style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondary, fontSize: 14),
+                style: GoogleFonts.plusJakartaSans(color: AppColors.textSecondaryOf(context), fontSize: 14),
               ),
             )
           : ListView.builder(
@@ -188,12 +188,12 @@ class EarningsHistoryScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.cardBg,
+                    color: AppColors.cardBgOf(context),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: AppColors.cardBorderOf(context)),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF0F172A).withOpacity(0.02),
+                        color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.02),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
