@@ -115,8 +115,7 @@ class QuizAndEarnApp extends StatelessWidget {
             title: 'Quiz & Earn',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeProvider.themeMode,
+            themeMode: ThemeMode.light,
             initialRoute: '/',
             routes: {
               '/': (_) => const SplashScreen(),

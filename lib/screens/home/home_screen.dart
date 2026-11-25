@@ -739,7 +739,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Background Photo
                         Positioned.fill(
                           child: Image.asset(
-                            'assets/images/featured_quiz.png',
+                            'assets/images/featured_quiz.webp',
                             fit: BoxFit.cover,
                           ),
                         ),

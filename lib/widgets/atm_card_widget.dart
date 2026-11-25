@@ -224,7 +224,7 @@ class _AtmCardWidgetState extends State<AtmCardWidget>
                     ),
                     child: Center(
                       child: Image.asset(
-                        'assets/images/atm_chip.png',
+                        'assets/images/atm_chip.webp',
                         width: 40,
                         height: 30,
                         fit: BoxFit.contain,
