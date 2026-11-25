@@ -81,147 +81,159 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundOf(context),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(height: 10),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SizedBox(height: 10),
 
-              // Hero Visual Graphic
-              Column(
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.gold.withOpacity(0.35),
-                          blurRadius: 28,
-                          spreadRadius: 2,
+                        // Hero Visual Graphic
+                        Column(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.gold.withOpacity(0.35),
+                                    blurRadius: 28,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: Image.asset(
+                                'assets/images/app_logo.webp',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'QUIZ & EARN',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppColors.textPrimaryOf(context),
+                                fontSize: 26,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Compete in trivia. Win real points. Claim rewards.',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppColors.textSecondaryOf(context),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Feature Cards Preview
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardBgOf(context),
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(color: AppColors.cardBorderOf(context)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.03),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildFeaturePill(Icons.quiz_rounded, '10,000+ Easy Trivia Questions', const Color(0xFFCFFAFE), AppColors.accent),
+                              const SizedBox(height: 14),
+                              _buildFeaturePill(Icons.credit_card_rounded, '3D ATM-Style Digital Reward Card', const Color(0xFFFEF3C7), AppColors.goldDark),
+                              const SizedBox(height: 14),
+                              _buildFeaturePill(Icons.account_balance_rounded, 'Instant UPI Withdrawal Ready', const Color(0xFFD1FAE5), AppColors.correct),
+                            ],
+                          ),
+                        ),
+
+                        // Bottom Actions: Continue with Google
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              height: 54,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.cardBgOf(context),
+                                  foregroundColor: AppColors.textPrimaryOf(context),
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    side: BorderSide(color: AppColors.cardBorderOf(context)),
+                                  ),
+                                ),
+                                onPressed: auth.isLoading ? null : _handleGoogleSignIn,
+                                child: auth.isLoading
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: AppColors.primary,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Image.network(
+                                            'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
+                                            height: 22,
+                                            errorBuilder: (_, __, ___) => const Icon(
+                                              Icons.login_rounded,
+                                              color: AppColors.primary,
+                                              size: 22,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            'Continue with Google',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                              color: AppColors.textPrimaryOf(context),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            Text(
+                              'By continuing, you agree to our Terms of Service & Privacy Policy.',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: AppColors.textSecondaryOf(context),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    child: Image.asset(
-                      'assets/images/app_logo.webp',
-                      fit: BoxFit.contain,
-                    ),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'QUIZ & EARN',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textPrimaryOf(context),
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Compete in trivia. Win real points. Claim rewards.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textSecondaryOf(context),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Feature Cards Preview
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.cardBgOf(context),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: AppColors.cardBorderOf(context)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(AppColors.isDark(context) ? 0.2 : 0.03),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    _buildFeaturePill(Icons.quiz_rounded, '10,000+ Easy Trivia Questions', const Color(0xFFCFFAFE), AppColors.accent),
-                    const SizedBox(height: 14),
-                    _buildFeaturePill(Icons.credit_card_rounded, '3D ATM-Style Digital Reward Card', const Color(0xFFFEF3C7), AppColors.goldDark),
-                    const SizedBox(height: 14),
-                    _buildFeaturePill(Icons.account_balance_rounded, 'Instant UPI Withdrawal Ready', const Color(0xFFD1FAE5), AppColors.correct),
-                  ],
                 ),
               ),
-
-              // Bottom Actions: Continue with Google
-              Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.cardBgOf(context),
-                        foregroundColor: AppColors.textPrimaryOf(context),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: AppColors.cardBorderOf(context)),
-                        ),
-                      ),
-                      onPressed: auth.isLoading ? null : _handleGoogleSignIn,
-                      child: auth.isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: AppColors.primary,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
-                                  height: 22,
-                                  errorBuilder: (_, __, ___) => const Icon(
-                                    Icons.login_rounded,
-                                    color: AppColors.primary,
-                                    size: 22,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Continue with Google',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimaryOf(context),
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'By continuing, you agree to our Terms of Service & Privacy Policy.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.textSecondaryOf(context),
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

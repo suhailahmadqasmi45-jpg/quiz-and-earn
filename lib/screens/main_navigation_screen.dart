@@ -107,10 +107,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildLiquidNavItem(0, Icons.home_rounded, lang.tr('nav_home')),
-                    _buildLiquidNavItem(1, Icons.grid_view_rounded, lang.tr('nav_categories')),
-                    _buildLiquidNavItem(2, Icons.account_balance_wallet_rounded, lang.tr('nav_wallet')),
-                    _buildLiquidNavItem(3, Icons.person_rounded, lang.tr('nav_profile')),
+                    Expanded(child: _buildLiquidNavItem(0, Icons.home_rounded, lang.tr('nav_home'))),
+                    Expanded(child: _buildLiquidNavItem(1, Icons.grid_view_rounded, lang.tr('nav_categories'))),
+                    Expanded(child: _buildLiquidNavItem(2, Icons.account_balance_wallet_rounded, lang.tr('nav_wallet'))),
+                    Expanded(child: _buildLiquidNavItem(3, Icons.person_rounded, lang.tr('nav_profile'))),
                   ],
                 ),
               ),
@@ -177,15 +177,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: GoogleFonts.plusJakartaSans(
-              color: isSelected
-                  ? (isDark ? const Color(0xFF818CF8) : const Color(0xFF312E81))
-                  : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
-              fontSize: 11,
-              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-              letterSpacing: -0.2,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              label,
+              maxLines: 1,
+              style: GoogleFonts.plusJakartaSans(
+                color: isSelected
+                    ? (isDark ? const Color(0xFF818CF8) : const Color(0xFF312E81))
+                    : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                letterSpacing: -0.2,
+              ),
             ),
           ),
         ],

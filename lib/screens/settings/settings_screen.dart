@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/audio/audio_manager.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/theme_provider.dart';
 import '../admin/admin_login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -115,7 +114,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProv = context.watch<ThemeProvider>();
     final isDark = AppColors.isDark(context);
 
     return Scaffold(

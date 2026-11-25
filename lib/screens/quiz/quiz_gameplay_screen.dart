@@ -228,44 +228,56 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Question progress pill
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBgOf(context),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.cardBorderOf(context)),
-                      ),
-                      child: Text(
-                        '${lang.tr('question')} ${quiz.currentIndex + 1} ${lang.tr('of')} ${quiz.questions.length}',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.textSecondaryOf(context),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBgOf(context),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.cardBorderOf(context)),
+                        ),
+                        child: Text(
+                          '${lang.tr('question')} ${quiz.currentIndex + 1} ${lang.tr('of')} ${quiz.questions.length}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.plusJakartaSans(
+                            color: AppColors.textSecondaryOf(context),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 8),
 
                     // Difficulty & Reward Points Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEEF2FF),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.bolt_rounded, size: 16, color: AppColors.primary),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Level ${q.difficultyLevel} (${q.difficultyTitle}) • +${q.pointsReward} Pts',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: AppColors.primary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEEF2FF),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.bolt_rounded, size: 16, color: AppColors.primary),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                'Level ${q.difficultyLevel} (${q.difficultyTitle}) • +${q.pointsReward} Pts',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

@@ -46,7 +46,8 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    await Future.delayed(const Duration(milliseconds: 2400));
+    // Fast launch under 1 second (<350ms splash)
+    await Future.delayed(const Duration(milliseconds: 320));
     if (!mounted) return;
 
     final auth = context.read<AuthProvider>();

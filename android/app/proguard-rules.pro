@@ -26,7 +26,9 @@
 -dontwarn androidx.room.paging.**
 
 # Google Play Services & Firebase
--keep class com.google.android.gms.** { *; }
+-keep class com.google.android.gms.auth.api.** { *; }
+-keep class com.google.android.gms.common.api.** { *; }
+-keep class com.google.android.gms.tasks.** { *; }
 -dontwarn com.google.android.gms.**
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**

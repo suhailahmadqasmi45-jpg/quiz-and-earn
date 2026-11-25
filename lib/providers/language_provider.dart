@@ -14,6 +14,8 @@ class LanguageProvider with ChangeNotifier {
 
   String get currentLanguageName {
     switch (_currentLanguage) {
+      case 'ur':
+        return 'اردو (Urdu)';
       case 'hi':
         return 'हिंदी (Hindi)';
       case 'hinglish':
@@ -26,6 +28,8 @@ class LanguageProvider with ChangeNotifier {
 
   String get currentLanguageBadge {
     switch (_currentLanguage) {
+      case 'ur':
+        return '🌐 اردو';
       case 'hi':
         return '🌐 हिं';
       case 'hinglish':
@@ -40,7 +44,7 @@ class LanguageProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString(_prefKey);
-      if (saved != null && (saved == 'en' || saved == 'hi' || saved == 'hinglish')) {
+      if (saved != null && (saved == 'en' || saved == 'hi' || saved == 'hinglish' || saved == 'ur')) {
         _currentLanguage = saved;
         notifyListeners();
       }
@@ -95,6 +99,13 @@ class LanguageSelectionModal extends StatelessWidget {
         'subtitle': 'सभी क्विज़ प्रश्न, उत्तर और मेनू शुद्ध हिंदी में',
         'badge': 'हिंदी',
         'icon': '🇮🇳',
+      },
+      {
+        'code': 'ur',
+        'title': 'اردو (Urdu)',
+        'subtitle': 'تمام کوئز سوالات، جوابات اور مینو خالص اردو میں',
+        'badge': 'اردو',
+        'icon': '🇵🇰',
       },
       {
         'code': 'hinglish',

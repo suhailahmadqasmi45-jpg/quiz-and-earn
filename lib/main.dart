@@ -63,34 +63,13 @@ void main() async {
     debugPrint('Firebase initialization notice: $e');
   }
 
-  // Initialize core services safely with error isolation
-  try {
-    final audioManager = AudioManager();
-    await audioManager.init();
-  } catch (e) {
-    debugPrint('AudioManager initialization notice: $e');
-  }
-
-  try {
-    final quizRepo = QuizRepository();
-    await quizRepo.init();
-  } catch (e) {
-    debugPrint('QuizRepository initialization notice: $e');
-  }
-
-  try {
-    final walletService = WalletService();
-    await walletService.init();
-  } catch (e) {
-    debugPrint('WalletService initialization notice: $e');
-  }
-
-  try {
-    final admobService = AdMobService();
-    await admobService.init();
-  } catch (e) {
-    debugPrint('AdMobService initialization notice: $e');
-  }
+  // Initialize core background services concurrently in parallel (non-blocking for sub-second launch)
+  Future.wait([
+    AudioManager().init().catchError((e) => debugPrint('AudioManager init notice: $e')),
+    QuizRepository().init().catchError((e) => debugPrint('QuizRepository init notice: $e')),
+    WalletService().init().catchError((e) => debugPrint('WalletService init notice: $e')),
+    AdMobService().init().catchError((e) => debugPrint('AdMobService init notice: $e')),
+  ]);
 
   runApp(const QuizAndEarnApp());
 }
@@ -116,6 +95,19 @@ class QuizAndEarnApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             themeMode: ThemeMode.light,
+            builder: (context, child) {
+              // Clamp font scaling to prevent Vivo/Funtouch OS text explosions and RenderFlex overflows
+              final mediaQuery = MediaQuery.of(context);
+              return MediaQuery(
+                data: mediaQuery.copyWith(
+                  textScaler: mediaQuery.textScaler.clamp(
+                    minScaleFactor: 0.85,
+                    maxScaleFactor: 1.10,
+                  ),
+                ),
+                child: child!,
+              );
+            },
             initialRoute: '/',
             routes: {
               '/': (_) => const SplashScreen(),
