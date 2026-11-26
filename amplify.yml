@@ -1,0 +1,21 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - echo "=== Preparing Quiz & Earn Super Admin Console for Production ==="
+        - mkdir -p dist/assets/data dist/assets/assets/data
+        - cp web/admin.html dist/index.html
+        - cp web/admin.html dist/admin.html
+        - python3 -c "import gzip, shutil; shutil.copyfileobj(gzip.open('assets/data/questions.json.gz', 'rb'), open('dist/questions.json', 'wb'))" 2>/dev/null || true
+        - cp dist/questions.json dist/assets/data/questions.json 2>/dev/null || true
+        - cp dist/questions.json dist/assets/assets/data/questions.json 2>/dev/null || true
+        - if [ -f web/favicon.png ]; then cp web/favicon.png dist/favicon.png; fi
+        - echo "/*    /index.html   200" > dist/_redirects
+        - echo "=== Quiz & Earn Admin Console Ready ==="
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths: []

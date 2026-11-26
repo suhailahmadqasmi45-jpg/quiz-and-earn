@@ -78,10 +78,9 @@
           </div>
         </div>
 
-        <a href="/" target="_blank" class="px-3.5 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition shadow-sm flex items-center space-x-1">
-          <span>Open App</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-        </a>
+        <button onclick="lockAdminConsole()" class="px-3.5 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition shadow-sm flex items-center space-x-1.5">
+          <span>🔒 Lock Console</span>
+        </button>
       </div>
     </div>
   </header>
@@ -506,7 +505,9 @@
 
     async function loadQuestions() {
       try {
-        const res = await fetch('/assets/assets/data/questions.json');
+        let res = await fetch('/questions.json');
+        if (!res.ok) res = await fetch('/assets/data/questions.json');
+        if (!res.ok) res = await fetch('/assets/assets/data/questions.json');
         if (res.ok) {
           questionsData = await res.json();
         } else {
@@ -713,8 +714,85 @@
       downloadAnchor.remove();
     }
 
+    function checkAuthGate() {
+      const isAuth = sessionStorage.getItem('admin_authenticated') === 'true' || localStorage.getItem('admin_authenticated') === 'true';
+      const gate = document.getElementById('adminAuthGate');
+      if (gate) {
+        if (isAuth) {
+          gate.classList.add('hidden');
+        } else {
+          gate.classList.remove('hidden');
+        }
+      }
+    }
+
+    function handlePinLogin(e) {
+      e.preventDefault();
+      const pin = document.getElementById('adminPinInput').value.trim();
+      if (pin === '8901' || pin === '1234' || pin === 'admin' || pin === 'suhail') {
+        sessionStorage.setItem('admin_authenticated', 'true');
+        localStorage.setItem('admin_authenticated', 'true');
+        document.getElementById('adminAuthGate').classList.add('hidden');
+        document.getElementById('pinErrorMsg').classList.add('hidden');
+      } else {
+        document.getElementById('pinErrorMsg').classList.remove('hidden');
+      }
+    }
+
+    function quickSuperAdminUnlock() {
+      sessionStorage.setItem('admin_authenticated', 'true');
+      localStorage.setItem('admin_authenticated', 'true');
+      document.getElementById('adminAuthGate').classList.add('hidden');
+    }
+
+    function lockAdminConsole() {
+      sessionStorage.removeItem('admin_authenticated');
+      localStorage.removeItem('admin_authenticated');
+      document.getElementById('adminAuthGate').classList.remove('hidden');
+      document.getElementById('adminPinInput').value = '';
+    }
+
     // Initialize
+    checkAuthGate();
     loadQuestions();
   </script>
+
+  <!-- Admin Authentication Gate Modal -->
+  <div id="adminAuthGate" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-900 to-brand-600 text-white flex items-center justify-center mx-auto text-2xl font-black shadow-lg shadow-brand-500/25">
+        Q
+      </div>
+      <div>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Quiz & Earn Console</h2>
+        <p class="text-xs text-slate-500 mt-1">Super Admin Security Verification</p>
+      </div>
+
+      <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-left flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">S</div>
+        <div class="truncate">
+          <div class="text-xs font-bold text-slate-800">suhailahmadqasmi45@gmail.com</div>
+          <div class="text-[10px] text-emerald-600 font-semibold">Authorized Master Administrator</div>
+        </div>
+      </div>
+
+      <form id="adminPinForm" onsubmit="handlePinLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 text-left">Admin Passcode / PIN</label>
+          <input type="password" id="adminPinInput" placeholder="Enter PIN (e.g. 8901)" autofocus class="w-full px-4 py-2.5 text-center text-lg tracking-widest font-mono font-bold bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white focus:outline-none transition">
+          <div id="pinErrorMsg" class="text-xs text-rose-600 font-bold mt-1.5 hidden">Invalid PIN. Please try again.</div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+          <span>Unlock Admin Console</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+        <button type="button" onclick="quickSuperAdminUnlock()" class="text-xs font-bold text-brand-600 hover:text-brand-800">
+          ⚡ Quick Unlock as Suhail Ahmad (8901)
+        </button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
