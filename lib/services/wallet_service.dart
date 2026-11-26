@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/wallet_model.dart';
 import 'auth_service.dart';
+import 'cloud_sync_service.dart';
 
 class WalletService {
   static final WalletService _instance = WalletService._internal();
@@ -241,6 +242,14 @@ class WalletService {
     );
     _withdrawals.insert(0, req);
     await _persistWithdrawals(user.uid);
+
+    // Sync to Cloud Firestore so it appears instantly on the Admin Console
+    try {
+      CloudSyncService().syncWithdrawal(req, user).catchError((e) {
+        debugPrint('Cloud withdrawal sync notice: $e');
+        return false;
+      });
+    } catch (_) {}
 
     // 2. Record ledger transaction
     final tx = WalletTransaction(
