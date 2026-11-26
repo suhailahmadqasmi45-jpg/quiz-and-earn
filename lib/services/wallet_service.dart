@@ -16,6 +16,7 @@ class WalletService {
   final List<WithdrawalRequest> _withdrawals = [];
   final List<QuizHistoryItem> _quizHistory = [];
   String? _activeUserId;
+  VoidCallback? onWalletUpdated;
 
   AppSettingsModel get settings => _settings;
   List<WalletTransaction> get transactions => List.unmodifiable(_transactions);
@@ -48,6 +49,27 @@ class WalletService {
     }
   }
 
+  /// Ensures a cloud-synced user with balance has a corresponding transaction ledger entry
+  Future<void> syncCloudPointsToWallet(String uid, int points) async {
+    if (points <= 0) return;
+    if (_transactions.isEmpty) {
+      final tx = WalletTransaction(
+        id: 'TX-CLOUD-${uid.hashCode.abs().toString().padLeft(6, '0').substring(0, 6)}',
+        userId: uid,
+        title: 'Quiz Earnings & Rewards',
+        description: 'Synchronized rewards balance from cloud account',
+        points: points,
+        amount: calculateRewardValue(points),
+        type: 'quiz_reward',
+        status: 'Completed',
+        timestamp: DateTime.now(),
+      );
+      _transactions.add(tx);
+      await _persistTransactions(uid);
+      onWalletUpdated?.call();
+    }
+  }
+
   /// Loads wallet, transactions, and quiz history exclusively for the specified user UID
   Future<void> loadForUser(String uid) async {
     _activeUserId = uid;
@@ -68,6 +90,25 @@ class WalletService {
       } catch (e) {
         debugPrint('Error loading transactions for $uid: $e');
       }
+    }
+
+    // If transactions list is empty but user already has points, create initial ledger item
+    final currentPoints = AuthService().currentUser?.availablePoints ?? 0;
+    if (_transactions.isEmpty && currentPoints > 0) {
+      _transactions.add(
+        WalletTransaction(
+          id: 'TX-INIT-${uid.hashCode.abs().toString().padLeft(6, '0').substring(0, 6)}',
+          userId: uid,
+          title: 'Quiz Earnings & Rewards',
+          description: 'Synchronized rewards balance from cloud account',
+          points: currentPoints,
+          amount: calculateRewardValue(currentPoints),
+          type: 'quiz_reward',
+          status: 'Completed',
+          timestamp: DateTime.now(),
+        ),
+      );
+      await _persistTransactions(uid);
     }
 
     // 2. Load user-specific withdrawals
@@ -174,6 +215,7 @@ class WalletService {
       _transactions.insert(0, tx);
       await _persistTransactions(uid);
     }
+    onWalletUpdated?.call();
   }
 
   Future<void> recordDailyBonusTransaction({required int points}) async {
@@ -200,6 +242,7 @@ class WalletService {
     );
     _transactions.insert(0, tx);
     await _persistTransactions(uid);
+    onWalletUpdated?.call();
   }
 
   Future<String?> submitWithdrawal({
@@ -269,6 +312,7 @@ class WalletService {
     // 3. Deduct points from active user
     await AuthService().deductPointsForWithdrawal(pointsToRedeem, amount);
 
+    onWalletUpdated?.call();
     return null; // Success!
   }
 

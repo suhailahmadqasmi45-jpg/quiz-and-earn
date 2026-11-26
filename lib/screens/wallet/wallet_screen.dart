@@ -24,6 +24,11 @@ class _WalletScreenState extends State<WalletScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<WalletProvider>().refreshFromCloud();
+      }
+    });
   }
 
   @override
@@ -63,6 +68,27 @@ class _WalletScreenState extends State<WalletScreen>
         elevation: 0,
         actions: [
           IconButton(
+            icon: Icon(Icons.sync_rounded, color: isDark ? const Color(0xFF818CF8) : AppColors.primary),
+            tooltip: 'Sync Wallet',
+            onPressed: () async {
+              AudioManager().playClick();
+              await context.read<WalletProvider>().refreshFromCloud();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Wallet balance synced with AWS Cloud',
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                    ),
+                    backgroundColor: AppColors.correct,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.info_outline_rounded, color: isDark ? const Color(0xFF818CF8) : AppColors.primary),
             onPressed: () {
               AudioManager().playClick();
@@ -71,10 +97,13 @@ class _WalletScreenState extends State<WalletScreen>
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
+      body: RefreshIndicator(
+        onRefresh: () => wallet.refreshFromCloud(),
+        color: AppColors.primary,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Interactive 3D ATM Card
@@ -181,7 +210,8 @@ class _WalletScreenState extends State<WalletScreen>
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildMetricsGrid(BuildContext context, WalletProvider wallet) {
@@ -354,7 +384,7 @@ class _WalletScreenState extends State<WalletScreen>
                     Text(
                       tx.title,
                       style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimaryOf(context),
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
@@ -363,7 +393,7 @@ class _WalletScreenState extends State<WalletScreen>
                     Text(
                       '${DateFormat('dd MMM yyyy, hh:mm a').format(tx.timestamp)} • ${tx.status}',
                       style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryOf(context),
                         fontSize: 11,
                       ),
                     ),

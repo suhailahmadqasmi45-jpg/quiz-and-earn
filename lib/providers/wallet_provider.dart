@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/wallet_model.dart';
 import '../services/wallet_service.dart';
 import '../services/auth_service.dart';
+import '../services/cloud_sync_service.dart';
 
 class WalletProvider with ChangeNotifier {
   final WalletService _walletService = WalletService();
@@ -9,6 +10,19 @@ class WalletProvider with ChangeNotifier {
 
   bool _isLoading = false;
   String? _errorMessage;
+
+  WalletProvider() {
+    // React immediately whenever wallet transactions or withdrawals update
+    _walletService.onWalletUpdated = () {
+      notifyListeners();
+    };
+    // React immediately whenever user stats or points update in AuthService
+    final previousOnUserUpdated = _authService.onUserUpdated;
+    _authService.onUserUpdated = () {
+      previousOnUserUpdated?.call();
+      notifyListeners();
+    };
+  }
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -34,6 +48,31 @@ class WalletProvider with ChangeNotifier {
   Future<void> init() async {
     await _walletService.init();
     notifyListeners();
+  }
+
+  /// Pulls the latest wallet balance and points directly from AWS DynamoDB
+  Future<void> refreshFromCloud() async {
+    final user = _authService.currentUser;
+    if (user != null && user.email.isNotEmpty) {
+      try {
+        final cloudUser = await CloudSyncService().fetchUser(user.email, baseUser: user);
+        if (cloudUser != null) {
+          final ptsDelta = cloudUser.availablePoints - user.availablePoints;
+          if (ptsDelta > 0 || cloudUser.totalQuizPlayed > user.totalQuizPlayed) {
+            await _authService.updateUserStats(
+              quizPlayedDelta: (cloudUser.totalQuizPlayed - user.totalQuizPlayed).clamp(0, 999999),
+              correctDelta: (cloudUser.totalCorrectAnswers - user.totalCorrectAnswers).clamp(0, 999999),
+              incorrectDelta: 0,
+              pointsDelta: ptsDelta > 0 ? ptsDelta : 0,
+            );
+          }
+          await _walletService.syncCloudPointsToWallet(user.uid, cloudUser.availablePoints);
+        }
+      } catch (e) {
+        debugPrint('refreshFromCloud notice: $e');
+      }
+      notifyListeners();
+    }
   }
 
   Future<bool> submitWithdrawal({

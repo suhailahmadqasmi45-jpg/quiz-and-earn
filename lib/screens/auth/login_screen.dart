@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Sync immediately to AWS DynamoDB
       CloudSyncService().syncUser(auth.currentUser!).catchError((e) {
         debugPrint('Cloud sync on login notice: $e');
-        return false;
+        return null;
       });
 
       // Direct entry to Home Dashboard without intermediate popups

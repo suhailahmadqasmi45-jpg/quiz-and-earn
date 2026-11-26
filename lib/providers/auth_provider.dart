@@ -7,6 +7,14 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   bool _isInitialized = false;
 
+  AuthProvider() {
+    final previousCallback = _authService.onUserUpdated;
+    _authService.onUserUpdated = () {
+      previousCallback?.call();
+      notifyListeners();
+    };
+  }
+
   bool get isInitialized => _isInitialized;
   UserModel? get currentUser => _authService.currentUser;
   bool get isAuthenticated => _authService.isAuthenticated;

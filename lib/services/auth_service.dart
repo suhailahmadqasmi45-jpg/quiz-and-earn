@@ -28,6 +28,7 @@ class AuthService {
   GoogleSignIn? _googleSignIn;
   UserModel? _currentUser;
   bool _isFirebaseAvailable = false;
+  VoidCallback? onUserUpdated;
 
   UserModel? get currentUser => _currentUser;
   bool get isAuthenticated => _currentUser != null;
@@ -59,8 +60,24 @@ class AuthService {
           // Load user-scoped wallet and seen questions
           await WalletService().loadForUser(activeUid);
           await QuizRepository().loadSeenQuestionsForUser(activeUid);
-          // Sync active session to AWS DynamoDB
-          CloudSyncService().syncUser(_currentUser!).catchError((_) => false);
+
+          // Asynchronously sync and fetch latest stats from AWS DynamoDB
+          if (_currentUser != null && _currentUser!.email.isNotEmpty) {
+            CloudSyncService().fetchUser(_currentUser!.email, baseUser: _currentUser).then((cloudUser) async {
+              if (cloudUser != null) {
+                if (cloudUser.availablePoints >= _currentUser!.availablePoints) {
+                  _currentUser = cloudUser;
+                  final updatedJson = json.encode(_currentUser!.toJson());
+                  await prefs.setString('user_profile_$activeUid', updatedJson);
+                  await prefs.setString('user_$activeUid', updatedJson);
+                  await WalletService().syncCloudPointsToWallet(activeUid, cloudUser.availablePoints);
+                  onUserUpdated?.call();
+                }
+              }
+            }).catchError((e) {
+              debugPrint('Background cloud user fetch notice: $e');
+            });
+          }
         }
       }
     } catch (e) {
@@ -120,28 +137,38 @@ class AuthService {
 
       // Check if this specific user UID already has an isolated stored profile
       final existingProfileJson = prefs.getString('user_profile_$uid');
+      UserModel? baseUser;
       if (existingProfileJson != null && existingProfileJson.isNotEmpty) {
         try {
-          final existing = UserModel.fromJson(json.decode(existingProfileJson) as Map<String, dynamic>);
-          _currentUser = existing.copyWith(
-            email: email,
-            name: existing.name.isNotEmpty ? existing.name : (name.isNotEmpty ? name : 'Quiz Player'),
-            photoUrl: photoUrl ?? existing.photoUrl,
-            isAdmin: isMasterAdmin || existing.isAdmin,
-          );
-        } catch (_) {
-          _currentUser = UserModel(
-            uid: uid,
-            name: name.isNotEmpty ? name : 'Quiz Player',
-            email: email,
-            mobile: '',
-            upiId: '',
-            photoUrl: photoUrl,
-            isAdmin: isMasterAdmin,
-            totalPoints: 0,
-            availablePoints: 0,
-          );
+          baseUser = UserModel.fromJson(json.decode(existingProfileJson) as Map<String, dynamic>);
+        } catch (_) {}
+      }
+
+      // 1. First, fetch persistent cloud user data from AWS DynamoDB if available!
+      UserModel? cloudUser;
+      if (email.isNotEmpty) {
+        try {
+          cloudUser = await CloudSyncService().fetchUser(email, baseUser: baseUser);
+        } catch (e) {
+          debugPrint('Error fetching cloud user during Google Sign-In: $e');
         }
+      }
+
+      if (cloudUser != null) {
+        _currentUser = cloudUser.copyWith(
+          uid: uid,
+          email: email,
+          name: name.isNotEmpty ? name : cloudUser.name,
+          photoUrl: photoUrl ?? cloudUser.photoUrl,
+          isAdmin: isMasterAdmin || cloudUser.isAdmin,
+        );
+      } else if (baseUser != null) {
+        _currentUser = baseUser.copyWith(
+          email: email,
+          name: baseUser.name.isNotEmpty ? baseUser.name : (name.isNotEmpty ? name : 'Quiz Player'),
+          photoUrl: photoUrl ?? baseUser.photoUrl,
+          isAdmin: isMasterAdmin || baseUser.isAdmin,
+        );
       } else {
         // Brand new isolated user: completely empty profile, 0 points
         _currentUser = UserModel(
@@ -162,7 +189,11 @@ class AuthService {
 
       // Load this user's isolated wallet, transactions, and question history
       await WalletService().loadForUser(uid);
+      if (_currentUser != null && _currentUser!.availablePoints > 0) {
+        await WalletService().syncCloudPointsToWallet(uid, _currentUser!.availablePoints);
+      }
       await QuizRepository().loadSeenQuestionsForUser(uid);
+      onUserUpdated?.call();
 
       return _currentUser;
     } catch (e) {
@@ -195,6 +226,7 @@ class AuthService {
       );
     await _persistCurrentUser();
     await WalletService().loadForUser(adminUid);
+    onUserUpdated?.call();
     return _currentUser!;
   }
 
@@ -214,12 +246,14 @@ class AuthService {
       isAdmin: isMasterAdmin,
     );
     await _persistCurrentUser();
+    onUserUpdated?.call();
   }
 
   Future<void> updatePhotoUrl(String photoUrl) async {
     if (_currentUser == null) return;
     _currentUser = _currentUser!.copyWith(photoUrl: photoUrl);
     await _persistCurrentUser();
+    onUserUpdated?.call();
   }
 
   Future<void> updateUserStats({
@@ -237,6 +271,7 @@ class AuthService {
       availablePoints: _currentUser!.availablePoints + pointsDelta,
     );
     await _persistCurrentUser();
+    onUserUpdated?.call();
   }
 
   Future<void> deductPointsForWithdrawal(int pointsDeducted, double amountWithdrawn) async {
@@ -246,6 +281,7 @@ class AuthService {
       totalWithdrawn: _currentUser!.totalWithdrawn + amountWithdrawn,
     );
     await _persistCurrentUser();
+    onUserUpdated?.call();
   }
 
   /// Complete logout clearing all active session references
@@ -268,6 +304,7 @@ class AuthService {
     // Reset user-scoped services
     WalletService().clearUserData();
     QuizRepository().clearActiveUser();
+    onUserUpdated?.call();
   }
 
   /// Deletes user data and resets session completely
@@ -292,6 +329,7 @@ class AuthService {
     _currentUser = null;
     WalletService().clearUserData();
     QuizRepository().clearActiveUser();
+    onUserUpdated?.call();
   }
 
   Future<void> _persistCurrentUser() async {
@@ -303,7 +341,14 @@ class AuthService {
     await prefs.setString('user_${_currentUser!.uid}', jsonStr);
     // Sync to AWS DynamoDB
     try {
-      await CloudSyncService().syncUser(_currentUser!);
+      final merged = await CloudSyncService().syncUser(_currentUser!);
+      if (merged != null && (merged.availablePoints > _currentUser!.availablePoints || merged.totalQuizPlayed > _currentUser!.totalQuizPlayed)) {
+        _currentUser = merged;
+        final updatedJson = json.encode(_currentUser!.toJson());
+        await prefs.setString('user_profile_${_currentUser!.uid}', updatedJson);
+        await prefs.setString('user_${_currentUser!.uid}', updatedJson);
+        onUserUpdated?.call();
+      }
     } catch (e) {
       debugPrint('Cloud user sync error: $e');
     }

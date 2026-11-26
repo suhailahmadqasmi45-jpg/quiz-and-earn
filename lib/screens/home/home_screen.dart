@@ -34,6 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkDailyBonusStatus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkUpiReminder();
+      if (mounted) {
+        context.read<WalletProvider>().refreshFromCloud();
+      }
     });
   }
 
