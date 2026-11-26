@@ -301,10 +301,11 @@ class AuthService {
     await prefs.setString('active_session_uid', _currentUser!.uid);
     await prefs.setString('user_profile_${_currentUser!.uid}', jsonStr);
     await prefs.setString('user_${_currentUser!.uid}', jsonStr);
-    // Sync to Cloud Firestore in background so new users are instantly visible in Admin Console
-    CloudSyncService().syncUser(_currentUser!).catchError((e) {
-      debugPrint('Cloud user sync notice: $e');
-      return false;
-    });
+    // Sync to AWS DynamoDB
+    try {
+      await CloudSyncService().syncUser(_currentUser!);
+    } catch (e) {
+      debugPrint('Cloud user sync error: $e');
+    }
   }
 }

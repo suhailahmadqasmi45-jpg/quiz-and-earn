@@ -7,8 +7,12 @@ frontend:
         - mkdir -p dist
         - cp web/admin.html dist/index.html
         - cp web/admin.html dist/admin.html
+        - if [ -f web/QuizAndEarn-release.apk ]; then cp web/QuizAndEarn-release.apk dist/QuizAndEarn-release.apk; fi
         - if [ -f web/favicon.png ]; then cp web/favicon.png dist/favicon.png; fi
-        - echo "/*    /index.html   200" > dist/_redirects
+        - echo "/QuizAndEarn-release.apk    /QuizAndEarn-release.apk    200" > dist/_redirects
+        - echo "/admin                      /admin.html                 200" >> dist/_redirects
+        - echo "/admin.html                 /admin.html                 200" >> dist/_redirects
+        - echo "/*                          /index.html                 200" >> dist/_redirects
         - echo "=== Admin Console Ready ==="
   artifacts:
     baseDirectory: dist

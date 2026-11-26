@@ -40,7 +40,9 @@ class CloudSyncService {
         'isAdmin': user.isAdmin,
       };
 
-      request.write(json.encode(body));
+      final bytes = utf8.encode(json.encode(body));
+      request.contentLength = bytes.length;
+      request.add(bytes);
       final response = await request.close();
       final respText = await response.transform(utf8.decoder).join();
 
@@ -78,7 +80,9 @@ class CloudSyncService {
         'utrNumber': '',
       };
 
-      request.write(json.encode(body));
+      final bytes = utf8.encode(json.encode(body));
+      request.contentLength = bytes.length;
+      request.add(bytes);
       final response = await request.close();
 
       if (response.statusCode == 200) {

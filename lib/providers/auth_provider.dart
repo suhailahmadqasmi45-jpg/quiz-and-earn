@@ -5,13 +5,16 @@ import '../services/auth_service.dart';
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _isInitialized = false;
 
+  bool get isInitialized => _isInitialized;
   UserModel? get currentUser => _authService.currentUser;
   bool get isAuthenticated => _authService.isAuthenticated;
   bool get isLoading => _isLoading;
 
   Future<void> init() async {
     await _authService.init();
+    _isInitialized = true;
     notifyListeners();
   }
 

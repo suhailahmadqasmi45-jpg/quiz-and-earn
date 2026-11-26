@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/audio/audio_manager.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/cloud_sync_service.dart';
 import 'profile_setup_modal.dart';
 import '../main_navigation_screen.dart';
 
@@ -53,17 +54,17 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success && auth.currentUser != null) {
-      final user = auth.currentUser!;
-      // If user profile is already completed, go directly to Home Dashboard!
-      if (user.mobile.isNotEmpty && user.name.isNotEmpty) {
-        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
-          (route) => false,
-        );
-      } else {
-        // Only new users with incomplete profiles see the setup popup
-        _showProfilePopup(user);
-      }
+      // Sync immediately to AWS DynamoDB
+      CloudSyncService().syncUser(auth.currentUser!).catchError((e) {
+        debugPrint('Cloud sync on login notice: $e');
+        return false;
+      });
+
+      // Direct entry to Home Dashboard without intermediate popups
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+        (route) => false,
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

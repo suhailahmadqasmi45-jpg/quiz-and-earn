@@ -48,5 +48,3 @@ app.*.map.json
 .widget_preview/
 .vercel
 .env*
-
-/release_apks/

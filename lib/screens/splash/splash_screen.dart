@@ -47,23 +47,20 @@ class _SplashScreenState extends State<SplashScreen>
 
   Future<void> _checkAuthAndNavigate() async {
     // Fast launch under 1 second (<350ms splash)
-    await Future.delayed(const Duration(milliseconds: 320));
+    await Future.delayed(const Duration(milliseconds: 300));
     if (!mounted) return;
 
     final auth = context.read<AuthProvider>();
-    if (auth.isAuthenticated) {
-      final user = auth.currentUser;
-      if (user != null && (user.mobile.isEmpty || user.name.isEmpty)) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen(autoShowSetup: true)),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
-        );
-      }
+    if (!auth.isInitialized) {
+      await auth.init();
+    }
+    if (!mounted) return;
+
+    if (auth.isAuthenticated && auth.currentUser != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+      );
     } else {
       Navigator.pushReplacement(
         context,
