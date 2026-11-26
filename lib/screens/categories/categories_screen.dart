@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/audio/audio_manager.dart';
 import '../../models/category_model.dart';
+import '../../services/admob_service.dart';
 import '../quiz/quiz_gameplay_screen.dart';
 
 class CategoriesScreen extends StatelessWidget {
@@ -111,11 +112,16 @@ class CategoriesScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
           onTap: () {
             AudioManager().playClick();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => QuizGameplayScreen(category: cat, startLevel: 1),
-              ),
+            AdMobService().showInterstitialAd(
+              onClosed: () {
+                if (!context.mounted) return;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => QuizGameplayScreen(category: cat, startLevel: 1),
+                  ),
+                );
+              },
             );
           },
           child: Column(

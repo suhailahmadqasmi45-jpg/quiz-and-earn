@@ -11,6 +11,8 @@ import '../../models/category_model.dart';
 import '../quiz/quiz_gameplay_screen.dart';
 import '../legal/legal_screens.dart';
 import '../profile/edit_profile_screen.dart';
+import '../../services/admob_service.dart';
+import '../../widgets/native_ad_card.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigateTab;
@@ -712,14 +714,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(22),
                 onTap: () {
                   AudioManager().playClick();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => QuizGameplayScreen(
-                        category: categories.first,
-                        startLevel: 1,
-                      ),
-                    ),
+                  AdMobService().showInterstitialAd(
+                    onClosed: () {
+                      if (!mounted) return;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuizGameplayScreen(
+                            category: categories.first,
+                            startLevel: 1,
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
                 child: Container(
@@ -917,7 +924,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
+
+              // Native Advanced Ad Banner
+              const NativeAdCard(
+                margin: EdgeInsets.only(bottom: 20),
+              ),
 
               // 4. Categories Section Header
               Row(
@@ -976,14 +988,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(20),
                         onTap: () {
                           AudioManager().playClick();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => QuizGameplayScreen(
-                                category: cat,
-                                startLevel: 1,
-                              ),
-                            ),
+                          AdMobService().showInterstitialAd(
+                            onClosed: () {
+                              if (!mounted) return;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => QuizGameplayScreen(
+                                    category: cat,
+                                    startLevel: 1,
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                         child: Container(

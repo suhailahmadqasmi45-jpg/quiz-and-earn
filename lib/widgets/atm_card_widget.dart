@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../core/theme/app_colors.dart';
 import '../core/audio/audio_manager.dart';
 import '../models/user_model.dart';
+import '../services/admob_service.dart';
 
 class AtmCardWidget extends StatefulWidget {
   final UserModel? user;
@@ -58,6 +59,8 @@ class _AtmCardWidgetState extends State<AtmCardWidget>
     setState(() {
       _isFront = !_isFront;
     });
+    // Trigger ad when ATM card is tapped
+    AdMobService().showInterstitialAd();
     widget.onCardTapped?.call();
   }
 

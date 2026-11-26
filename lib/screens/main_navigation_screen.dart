@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../core/theme/app_colors.dart';
 import '../core/audio/audio_manager.dart';
 import '../providers/language_provider.dart';
+import '../services/admob_service.dart';
 import 'home/home_screen.dart';
 import 'categories/categories_screen.dart';
 import 'wallet/wallet_screen.dart';
@@ -32,6 +33,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void _onTabSelected(int index) {
     if (_currentIndex != index) {
       AudioManager().playClick();
+      // Show Interstitial ad when user taps on Digital Wallet tab
+      if (index == 2) {
+        AdMobService().showInterstitialAd(
+          onClosed: () {
+            if (mounted) {
+              setState(() {
+                _currentIndex = index;
+              });
+            }
+          },
+        );
+        return;
+      }
       setState(() {
         _currentIndex = index;
       });

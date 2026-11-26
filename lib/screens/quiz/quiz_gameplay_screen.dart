@@ -6,6 +6,8 @@ import '../../core/audio/audio_manager.dart';
 import '../../providers/quiz_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../models/category_model.dart';
+import '../../services/admob_service.dart';
+import '../../widgets/native_ad_card.dart';
 import 'hint_dialog.dart';
 import 'quiz_result_screen.dart';
 
@@ -519,6 +521,11 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
                 ),
               ),
 
+              // Native Advanced Ad Banner in Quiz
+              const NativeAdCard(
+                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+
               // 4. Bottom "Next Question" or "View Results" Button
               if (quiz.isAnswerChecked)
                 Padding(
@@ -618,7 +625,12 @@ class _QuizGameplayScreenState extends State<QuizGameplayScreen> {
             onTap: (quiz.isAnswerChecked || isEliminated)
                 ? null
                 : () {
-                    quiz.selectOption(optionIndex);
+                    // Trigger ad before showing answer
+                    AdMobService().showQuizAnswerAd(
+                      onProceed: () {
+                        quiz.selectOption(optionIndex);
+                      },
+                    );
                   },
             borderRadius: BorderRadius.circular(18),
             child: Container(

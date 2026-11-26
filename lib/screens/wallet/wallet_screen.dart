@@ -7,6 +7,7 @@ import '../../core/audio/audio_manager.dart';
 import '../../providers/wallet_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/atm_card_widget.dart';
+import '../../widgets/native_ad_card.dart';
 import 'withdrawal_dialog.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -155,7 +156,12 @@ class _WalletScreenState extends State<WalletScreen>
 
             // 3. Financial Summary Metrics Cards Grid
             _buildMetricsGrid(context, wallet),
-            const SizedBox(height: 24),
+            const SizedBox(height: 18),
+
+            // Native Advanced Ad in Wallet Screen
+            const NativeAdCard(
+              margin: EdgeInsets.only(bottom: 20),
+            ),
 
             // 4. Tab bar for Transactions, Rewards, and Withdrawals
             Container(
