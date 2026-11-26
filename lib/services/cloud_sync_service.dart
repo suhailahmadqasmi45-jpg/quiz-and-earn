@@ -9,39 +9,35 @@ class CloudSyncService {
   factory CloudSyncService() => _instance;
   CloudSyncService._internal();
 
-  static const String projectId = 'quiz-and-earn-63428';
-  static const String apiKey = 'AIzaSyDHcoQIQtqo92gorMOQiFqlROPwdCrM8Ic';
-  static const String firestoreBaseUrl =
-      'https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents';
+  /// AWS Native DynamoDB + Lambda Function URL in eu-north-1
+  static const String awsBackendUrl =
+      'https://4jeem3lydxmrw3kspezhw7sbdm0uvolu.lambda-url.eu-north-1.on.aws';
 
   final HttpClient _client = HttpClient()
     ..connectionTimeout = const Duration(seconds: 10);
 
-  /// Synchronizes the user profile, stats, and wallet points to Cloud Firestore
+  /// Synchronizes the user profile, stats, and wallet points to AWS DynamoDB
   Future<bool> syncUser(UserModel user) async {
-    if (user.uid.isEmpty) return false;
+    final email = user.email.isNotEmpty ? user.email.trim() : user.uid.trim();
+    if (email.isEmpty) return false;
 
     try {
-      final url = Uri.parse('$firestoreBaseUrl/users/${user.uid}?key=$apiKey');
-      final request = await _client.patchUrl(url);
+      final url = Uri.parse('$awsBackendUrl/sync-user');
+      final request = await _client.postUrl(url);
       request.headers.contentType = ContentType.json;
 
       final body = {
-        'fields': {
-          'uid': {'stringValue': user.uid},
-          'name': {'stringValue': user.name.isNotEmpty ? user.name : 'Quiz Player'},
-          'email': {'stringValue': user.email},
-          'mobile': {'stringValue': user.mobile},
-          'upiId': {'stringValue': user.upiId},
-          'photoUrl': {'stringValue': user.photoUrl ?? ''},
-          'totalPoints': {'integerValue': user.totalPoints.toString()},
-          'availablePoints': {'integerValue': user.availablePoints.toString()},
-          'totalQuizPlayed': {'integerValue': user.totalQuizPlayed.toString()},
-          'totalCorrectAnswers': {'integerValue': user.totalCorrectAnswers.toString()},
-          'isAdmin': {'booleanValue': user.isAdmin},
-          'lastSeen': {'stringValue': DateTime.now().toIso8601String()},
-          'updatedAt': {'stringValue': DateTime.now().toIso8601String()},
-        }
+        'uid': user.uid,
+        'name': user.name.isNotEmpty ? user.name : 'Quiz Player',
+        'email': email,
+        'mobile': user.mobile,
+        'upiId': user.upiId,
+        'photoUrl': user.photoUrl ?? '',
+        'coins': user.availablePoints,
+        'coinsEarned': user.totalPoints,
+        'quizzesPlayed': user.totalQuizPlayed,
+        'correctAnswers': user.totalCorrectAnswers,
+        'isAdmin': user.isAdmin,
       };
 
       request.write(json.encode(body));
@@ -49,7 +45,7 @@ class CloudSyncService {
       final respText = await response.transform(utf8.decoder).join();
 
       if (response.statusCode == 200) {
-        debugPrint('CloudSyncService: User ${user.email} synced successfully to cloud.');
+        debugPrint('CloudSyncService: User $email synced to AWS DynamoDB.');
         return true;
       } else {
         debugPrint('CloudSyncService: syncUser returned ${response.statusCode}: $respText');
@@ -61,34 +57,32 @@ class CloudSyncService {
     }
   }
 
-  /// Synchronizes a withdrawal redemption request to Cloud Firestore
+  /// Synchronizes a withdrawal redemption request to AWS DynamoDB
   Future<bool> syncWithdrawal(WithdrawalRequest req, UserModel user) async {
     try {
-      final url = Uri.parse('$firestoreBaseUrl/withdrawals/${req.id}?key=$apiKey');
-      final request = await _client.patchUrl(url);
+      final url = Uri.parse('$awsBackendUrl/sync-withdrawal');
+      final request = await _client.postUrl(url);
       request.headers.contentType = ContentType.json;
 
       final body = {
-        'fields': {
-          'id': {'stringValue': req.id},
-          'userId': {'stringValue': req.userId},
-          'userName': {'stringValue': req.userName.isNotEmpty ? req.userName : user.name},
-          'userEmail': {'stringValue': req.userEmail.isNotEmpty ? req.userEmail : user.email},
-          'userMobile': {'stringValue': req.userMobile.isNotEmpty ? req.userMobile : user.mobile},
-          'upiId': {'stringValue': req.upiId},
-          'pointsDeducted': {'integerValue': req.pointsDeducted.toString()},
-          'amount': {'doubleValue': req.amount},
-          'status': {'stringValue': req.status},
-          'requestDate': {'stringValue': req.requestDate.toIso8601String()},
-          'utr': {'stringValue': ''},
-        }
+        'id': req.id,
+        'userId': req.userId,
+        'userName': req.userName.isNotEmpty ? req.userName : user.name,
+        'userEmail': req.userEmail.isNotEmpty ? req.userEmail : user.email,
+        'userMobile': req.userMobile.isNotEmpty ? req.userMobile : user.mobile,
+        'upiId': req.upiId,
+        'coinsDeducted': req.pointsDeducted,
+        'amount': req.amount,
+        'status': req.status,
+        'createdAt': req.requestDate.toIso8601String(),
+        'utrNumber': '',
       };
 
       request.write(json.encode(body));
       final response = await request.close();
 
       if (response.statusCode == 200) {
-        debugPrint('CloudSyncService: Withdrawal ${req.id} synced to cloud.');
+        debugPrint('CloudSyncService: Withdrawal ${req.id} synced to AWS DynamoDB.');
         return true;
       }
       return false;

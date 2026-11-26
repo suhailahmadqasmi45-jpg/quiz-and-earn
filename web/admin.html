@@ -157,7 +157,7 @@
         </div>
       </div>
 
-      <!-- Cloud Status Notice (shows if Firestore is pending activation) -->
+      <!-- Cloud Status Notice (Amazon DynamoDB) -->
       <div id="cloudStatusNotice" class="hidden"></div>
 
       <!-- Users Table -->
@@ -303,9 +303,7 @@
   </main>
 
   <script>
-    const FIREBASE_PROJECT_ID = 'quiz-and-earn-63428';
-    const FIREBASE_API_KEY = 'AIzaSyDHcoQIQtqo92gorMOQiFqlROPwdCrM8Ic';
-    const FIRESTORE_BASE_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
+    const AWS_BACKEND_URL = 'https://4jeem3lydxmrw3kspezhw7sbdm0uvolu.lambda-url.eu-north-1.on.aws';
 
     let allLiveUsers = [];
     let allLiveWithdrawals = [];
@@ -368,81 +366,45 @@
       }
     }
 
-    // Load Live Players from Cloud Firestore
+    // Load Live Players from Amazon DynamoDB via AWS Lambda
     async function loadLiveUsers(isManualRefresh = false) {
       const tbody = document.getElementById('usersTableBody');
       const noticeDiv = document.getElementById('cloudStatusNotice');
 
       if (isManualRefresh) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-400">Refreshing live player directory from cloud...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-400">Refreshing live player directory from Amazon DynamoDB...</td></tr>';
       }
 
       try {
-        const url = `${FIRESTORE_BASE_URL}/users?key=${FIREBASE_API_KEY}`;
-        const res = await fetch(url);
-
+        const res = await fetch(`${AWS_BACKEND_URL}/users`);
         if (res.ok) {
-          const data = await res.json();
-          const docs = data.documents || [];
-          allLiveUsers = docs.map(doc => {
-            const f = doc.fields || {};
-            return {
-              uid: f.uid?.stringValue || doc.name.split('/').pop(),
-              name: f.name?.stringValue || 'Quiz Player',
-              email: f.email?.stringValue || 'Player',
-              mobile: f.mobile?.stringValue || 'N/A',
-              upiId: f.upiId?.stringValue || 'Not set',
-              photoUrl: f.photoUrl?.stringValue || '',
-              totalPoints: parseInt(f.totalPoints?.integerValue || 0),
-              availablePoints: parseInt(f.availablePoints?.integerValue || 0),
-              totalQuizPlayed: parseInt(f.totalQuizPlayed?.integerValue || 0),
-              totalCorrectAnswers: parseInt(f.totalCorrectAnswers?.integerValue || 0),
-              lastSeen: f.lastSeen?.stringValue || '',
-              isAdmin: f.isAdmin?.booleanValue || false
-            };
-          });
+          const list = await res.json();
+          allLiveUsers = (list || []).map(u => ({
+            uid: u.email || 'USR-' + Math.floor(Math.random() * 1000),
+            name: u.name || 'Quiz Player',
+            email: u.email || 'Player',
+            mobile: u.mobile || 'N/A',
+            upiId: u.upiId || 'Not set',
+            photoUrl: u.photoUrl || '',
+            totalPoints: parseInt(u.coinsEarned || u.coins || 0),
+            availablePoints: parseInt(u.coins || 0),
+            totalQuizPlayed: parseInt(u.quizzesPlayed || 0),
+            totalCorrectAnswers: parseInt(u.correctAnswers || 0),
+            lastSeen: u.lastActive || u.updatedAt || '',
+            isAdmin: u.isAdmin || false
+          }));
 
-          // Save cached copy in browser
           localStorage.setItem('cached_live_users', JSON.stringify(allLiveUsers));
-          noticeDiv.classList.add('hidden');
+          if (noticeDiv) noticeDiv.classList.add('hidden');
         } else {
-          // Cloud Firestore database not yet enabled in Firebase console
-          const cached = localStorage.getItem('cached_live_users');
-          if (cached) {
-            allLiveUsers = JSON.parse(cached);
-          } else {
-            // Sample preview while Firestore is enabled
-            allLiveUsers = [
-              {
-                uid: 'USR-8901',
-                name: 'Suhail Ahmad (Super Admin)',
-                email: 'suhailahmadqasmi45@gmail.com',
-                mobile: '+91 9876543210',
-                upiId: 'suhail@okhdfcbank',
-                totalQuizPlayed: 50,
-                totalCorrectAnswers: 45,
-                totalPoints: 50000,
-                availablePoints: 50000,
-                lastSeen: new Date().toISOString(),
-                isAdmin: true
-              }
-            ];
-          }
-
-          noticeDiv.className = 'p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs';
-          noticeDiv.innerHTML = `
-            <div class="text-amber-800">
-              <span class="font-bold">⚠️ Cloud Firestore Database Activate Karein:</span>
-              <span>Aapke Firebase project <strong>${FIREBASE_PROJECT_ID}</strong> me Firestore database 1-click me enable karein taaki app ke sabhi naye users yahan live sync hon.</span>
-            </div>
-            <a href="https://console.firebase.google.com/project/${FIREBASE_PROJECT_ID}/firestore" target="_blank" class="px-3.5 py-1.5 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 whitespace-nowrap shadow-sm">
-              1-Click Enable in Firebase &rarr;
-            </a>
-          `;
-          noticeDiv.classList.remove('hidden');
+          throw new Error('Server returned ' + res.status);
         }
       } catch (err) {
-        console.error('Error fetching users:', err);
+        console.warn('Fallback to cached users:', err);
+        const cached = localStorage.getItem('cached_live_users');
+        if (cached) {
+          allLiveUsers = JSON.parse(cached);
+        }
       }
 
       renderUsersTable(allLiveUsers);
@@ -511,29 +473,23 @@
       renderUsersTable(filtered);
     }
 
-    // Load Live Payout Requests
+    // Load Live Payout Requests from Amazon DynamoDB
     async function loadLiveWithdrawals() {
-      const tbody = document.getElementById('withdrawalsBody');
       try {
-        const url = `${FIRESTORE_BASE_URL}/withdrawals?key=${FIREBASE_API_KEY}`;
-        const res = await fetch(url);
+        const res = await fetch(`${AWS_BACKEND_URL}/withdrawals`);
         if (res.ok) {
-          const data = await res.json();
-          const docs = data.documents || [];
-          allLiveWithdrawals = docs.map(doc => {
-            const f = doc.fields || {};
-            return {
-              id: f.id?.stringValue || doc.name.split('/').pop(),
-              userName: f.userName?.stringValue || 'Player',
-              userEmail: f.userEmail?.stringValue || '',
-              upiId: f.upiId?.stringValue || 'N/A',
-              pointsDeducted: parseInt(f.pointsDeducted?.integerValue || 0),
-              amount: parseFloat(f.amount?.doubleValue || 0),
-              status: f.status?.stringValue || 'Pending',
-              requestDate: f.requestDate?.stringValue || '',
-              utr: f.utr?.stringValue || ''
-            };
-          });
+          const list = await res.json();
+          allLiveWithdrawals = (list || []).map(w => ({
+            id: w.id || '',
+            userName: w.userName || 'Player',
+            userEmail: w.userEmail || '',
+            upiId: w.upiId || 'N/A',
+            pointsDeducted: parseInt(w.coinsDeducted || 0),
+            amount: parseFloat(w.amount || 0),
+            status: w.status === 'completed' ? `Approved (UTR: ${w.utrNumber || ''})` : (w.status.startsWith('rejected') ? 'Rejected' : 'Pending'),
+            requestDate: w.createdAt || '',
+            utr: w.utrNumber || ''
+          }));
         } else {
           allLiveWithdrawals = [];
         }
@@ -588,20 +544,15 @@
       if (!utr) return;
 
       try {
-        const url = `${FIRESTORE_BASE_URL}/withdrawals/${reqId}?updateMask.fieldPaths=status&updateMask.fieldPaths=utr&key=${FIREBASE_API_KEY}`;
-        await fetch(url, {
-          method: 'PATCH',
+        await fetch(`${AWS_BACKEND_URL}/approve-payout`, {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fields: {
-              status: { stringValue: `Approved (UTR: ${utr})` },
-              utr: { stringValue: utr }
-            }
-          })
+          body: JSON.stringify({ id: reqId, status: 'completed', utrNumber: utr })
         });
-      } catch (_) {}
+      } catch (e) {
+        console.error('Approve payout error:', e);
+      }
 
-      // Update in memory
       const item = allLiveWithdrawals.find(w => w.id === reqId);
       if (item) {
         item.status = `Approved (UTR: ${utr})`;
@@ -617,21 +568,18 @@
       if (!reason) return;
 
       try {
-        const url = `${FIRESTORE_BASE_URL}/withdrawals/${reqId}?updateMask.fieldPaths=status&key=${FIREBASE_API_KEY}`;
-        await fetch(url, {
-          method: 'PATCH',
+        await fetch(`${AWS_BACKEND_URL}/update-withdrawal`, {
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fields: {
-              status: { stringValue: `Rejected (${reason})` }
-            }
-          })
+          body: JSON.stringify({ id: reqId, status: `rejected (${reason})`, utrNumber: '' })
         });
-      } catch (_) {}
+      } catch (e) {
+        console.error('Reject payout error:', e);
+      }
 
       const item = allLiveWithdrawals.find(w => w.id === reqId);
       if (item) {
-        item.status = `Rejected`;
+        item.status = 'Rejected';
       }
       renderWithdrawalsTable(allLiveWithdrawals);
       updateKpis();

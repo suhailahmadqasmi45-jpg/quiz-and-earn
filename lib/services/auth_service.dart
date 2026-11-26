@@ -59,6 +59,8 @@ class AuthService {
           // Load user-scoped wallet and seen questions
           await WalletService().loadForUser(activeUid);
           await QuizRepository().loadSeenQuestionsForUser(activeUid);
+          // Sync active session to AWS DynamoDB
+          CloudSyncService().syncUser(_currentUser!).catchError((_) => false);
         }
       }
     } catch (e) {
